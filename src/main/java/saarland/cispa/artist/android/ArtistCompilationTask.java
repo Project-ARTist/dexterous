@@ -31,6 +31,7 @@ import java.util.concurrent.Callable;
 import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 import saarland.cispa.artist.utils.ArtistInterruptedException;
+import saarland.cispa.artist.utils.ArtistThread;
 import trikita.log.Log;
 
 public class ArtistCompilationTask implements Callable, ArtistGuiProgress {
@@ -108,14 +109,6 @@ public class ArtistCompilationTask implements Callable, ArtistGuiProgress {
 
     public void addResultCallback(final CompilationResultReceiver listener) {
         this.resultCallback = listener;
-    }
-
-    public static void checkThreadCancellation() throws ArtistInterruptedException {
-        if (Thread.currentThread().isInterrupted()) {
-            Log.d(TAG, String.format("checkThreadCancellation() interrupted[%b]",
-                    Thread.currentThread().isInterrupted()));
-            throw new ArtistInterruptedException("Thread is interrupted.");
-        }
     }
 
     @Override

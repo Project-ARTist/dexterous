@@ -19,7 +19,7 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.utils;
+package saarland.cispa.artist.android;
 
 import java.io.BufferedReader;
 import java.io.IOException;

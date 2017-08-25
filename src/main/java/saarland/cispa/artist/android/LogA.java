@@ -19,7 +19,7 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.log;
+package saarland.cispa.artist.android;
 
 import android.content.Context;
 import android.content.SharedPreferences;

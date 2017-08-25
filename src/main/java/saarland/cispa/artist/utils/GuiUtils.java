@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import saarland.cispa.artist.StringUtils;
+import saarland.cispa.artist.android.ProcessExecutor;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;
 

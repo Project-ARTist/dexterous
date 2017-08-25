@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import saarland.cispa.artist.utils.GuiUtils;
-import saarland.cispa.artist.utils.ProcessExecutor;
+import saarland.cispa.artist.android.ProcessExecutor;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;
 

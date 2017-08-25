@@ -39,12 +39,12 @@ import java.util.Locale;
 import saarland.cispa.apksigner.ApkSigner;
 import saarland.cispa.apksigner.ApkZipSir;
 import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
-import saarland.cispa.artist.log.LogA;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 import saarland.cispa.artist.utils.ArtistInterruptedException;
+import saarland.cispa.artist.utils.ArtistThread;
 import saarland.cispa.artist.utils.ArtistUtils;
 import saarland.cispa.artist.utils.CompilationException;
-import saarland.cispa.artist.utils.ProcessExecutor;
+import saarland.cispa.artist.android.ProcessExecutor;
 import saarland.cispa.dexterous.Dexterous;
 import trikita.log.Log;
 
@@ -173,19 +173,19 @@ public class ArtistImpl implements Artist {
         try {
             progressUpdate(10, "Cleaning Build Files");
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             cleanBuildFiles();
 
             progressUpdate(20, "Setup Keystore");
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             setupKeystore(context);
 
             progressUpdate(30, "Setup dex2artist");
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             final String pathDex2oat = copyAssetToFilesDir(context,
                     config.asset_path_dex2oat,
@@ -197,39 +197,39 @@ public class ArtistImpl implements Artist {
                 throw new CompilationException("Artist: Dex2oat Setup failed");
             }
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             setupArtistLibraries(context, config);
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             if (ArtistUtils.isMultiDex(config.app_apk_file_path) && config.MULTIDEX_ABORT) {
                 progressUpdateVerbose(-1, "Aborting Compilation: MultiDex APK found");
                 throw new CompilationException(String.format("Run() Multidex ABORT (APK: %s)", config.app_apk_file_path));
             }
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             probeOatFilePermissions();
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             deleteOatFile();
 
             progressUpdate(40, "Merging CodeLib");
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             success = mergeCodeLib(context, config);
             if (!success) {
                 throw new CompilationException("Codelib Merge Failed");
             }
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             backupMergedApk(this.config);
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             backupOriginalApk(this.config);
 
@@ -241,7 +241,7 @@ public class ArtistImpl implements Artist {
             }
             progressUpdate(50, "Compiling: " + config.app_name);
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             success = recompileApp(context, pathDex2oat);
             if (!success) {
@@ -249,11 +249,11 @@ public class ArtistImpl implements Artist {
             }
             progressUpdate(90, "Compilation done, Cleaning");
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             success = fixOatFilePermissions(config);
 
-            ArtistCompilationTask.checkThreadCancellation();
+            ArtistThread.checkThreadCancellation();
 
             cleanBuildFiles();
 

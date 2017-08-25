@@ -43,8 +43,8 @@ import java.util.zip.ZipOutputStream;
 import comm.android.dex.Dex;
 import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
-import saarland.cispa.artist.android.ArtistCompilationTask;
 import saarland.cispa.artist.settings.ArtistRunConfig;
+import saarland.cispa.artist.utils.ArtistThread;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
@@ -143,7 +143,7 @@ public class Dexterous {
             int classes_dex_counter = 1;
 
             while ((apkContent = zipInput.getNextEntry()) != null) {
-                ArtistCompilationTask.checkThreadCancellation();
+                ArtistThread.checkThreadCancellation();
 //                Log.d(TAG, "> zipInput: " + apkContent.getName());
                 if (apkContent.getName().contains(".dex") && classes_dex_counter == 1) {
                     for (final Dex classesDex : this.dexBuffers.values()) {
