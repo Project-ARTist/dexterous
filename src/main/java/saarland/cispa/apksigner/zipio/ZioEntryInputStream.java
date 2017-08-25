@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-import saarland.cispa.artist.log.LogA;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;
 

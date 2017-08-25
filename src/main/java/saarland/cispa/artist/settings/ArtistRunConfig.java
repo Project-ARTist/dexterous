@@ -21,8 +21,6 @@
  */
 package saarland.cispa.artist.settings;
 
-import android.support.annotation.Nullable;
-
 import java.io.File;
 
 import saarland.cispa.artist.utils.ArtistUtils;
@@ -89,7 +87,6 @@ public class ArtistRunConfig {
     public String artist_exec_path_libs_dir = "";
     public String artist_exec_path_dex2oat = "";
 
-    @Nullable
     public File codeLib = null;
     public String codeLibName = "";
 

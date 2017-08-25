@@ -3,6 +3,7 @@
 .gradle
 .idea/
 /build
+/out
 /captures
 /local.properties
 build/
