@@ -4,7 +4,7 @@ import com.android.apksig.ApkSigner;
 import com.android.apksig.apk.ApkFormatException;
 import com.android.apksig.apk.MinSdkVersionException;
 import com.android.apksigner.PasswordRetriever;
-import org.pmw.tinylog.Logger;
+import trikita.log.Log;
 
 import javax.crypto.EncryptedPrivateKeyInfo;
 import javax.crypto.SecretKey;
@@ -360,7 +360,7 @@ public class ApkSir {
         final List<ApkSigner.SignerConfig> signerConfigs = buildSignerConfigs(signers);
 
         if (signerConfigs == null) {
-            Logger.error("No SignerConfig found.");
+            Log.e("No SignerConfig found.");
             return;
         }
 
@@ -385,7 +385,7 @@ public class ApkSir {
         if (!tmpOutputApk.getCanonicalPath().equals(outputApk.getCanonicalPath())) {
             renameOutputApk();
         }
-        Logger.info("Signed: " + outputApk.getName());
+        Log.i("Signed: " + outputApk.getName());
     }
 
     private List<SignerParams> buildDefaultSignerParams() {

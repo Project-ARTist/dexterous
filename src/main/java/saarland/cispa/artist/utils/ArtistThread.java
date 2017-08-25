@@ -1,6 +1,5 @@
 package saarland.cispa.artist.utils;
 
-import saarland.cispa.artist.android.ArtistCompilationTask;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
