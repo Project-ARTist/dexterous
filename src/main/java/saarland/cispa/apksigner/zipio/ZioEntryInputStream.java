@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
+import saarland.cispa.artist.android.LogA;
 import saarland.cispa.log.LogG;
+
 import trikita.log.Log;
 
 
