@@ -1,0 +1,14 @@
+*.iml
+.DS_Store
+.gradle
+.idea/
+/build
+/captures
+/local.properties
+build/
+*.apk
+doc/log
+doc/tombstones
+gradle/
+gradlew*
+TaintingCompiler.iml

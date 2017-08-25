@@ -1,0 +1,6 @@
+# Source
+
+`git clone https://android.googlesource.com/platform/libcore -b nougat-release`
+
+Then go to `cd libcore/dex`.
+

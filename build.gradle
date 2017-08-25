@@ -1,0 +1,69 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        // Encapsulates configurations for the main source set.
+        main {
+            // Changes the directory for Java sources. The default directory is
+            // 'src/main/java'.
+            java.srcDirs = ['src/main/java']
+
+            java.exclude '**/dexterous/cli/*.java'
+
+            // If you list multiple directories, Gradle uses all of them to collect
+            // sources. Because Gradle gives these directories equal priority, if
+            // you define the same resource in more than one directory, you get an
+            // error when merging resources. The default directory is 'src/main/res'.
+            res.srcDirs = ['src/main/res']
+
+            // Note: You should avoid specifying a directory which is a parent to one
+            // or more other directories you specify. For example, avoid the following:
+            // res.srcDirs = ['other/res1', 'other/res1/layouts', 'other/res1/strings']
+            // You should specify either only the root 'other/res1' directory, or only the
+            // nested 'other/res1/layouts' and 'other/res1/strings' directories.
+
+            // For each source set, you can specify only one Android manifest.
+            // By default, Android Studio creates a manifest for your main source
+            // set in the src/main/ directory.
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+//    compile project(':dex')
+//    compile project(':dx')
+
+    compile 'com.android.support:design:25.1.0'
+    compile 'co.trikita:log:1.1.5'
+    compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
+    compile 'com.madgag.spongycastle:core:1.54.0.0'
+    compile 'com.madgag.spongycastle:prov:1.54.0.0'
+    compile 'com.madgag.spongycastle:pkix:1.54.0.0'
+    compile 'commons-cli:commons-cli:1.4'
+}

@@ -1,0 +1,23 @@
+# Changes
+>
+> Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
+>
+
+## trikita logging
+
+Used as a library (gradle import): [github.com/zserge/log](https://github.com/zserge/log)
+
+## kellinwood-zipsigner
+
+Sources were obtained from [zip-signer](https://code.google.com/archive/p/zip-signer/),
+when the SVN was still available.
+
+# Forks are available, e.g. here: [github.com/AllanWang/Kellinwood-ZipSigner](https://github.com/AllanWang/Kellinwood-ZipSigner)
+
+### kellinwood-zipsigner changes
+
+- Mostly renamings, moves and different imports in terms of package names.
+- Logging: Added Trikita logging
+    - Replaced everything with new logging functions in kellinwood* stuff
+- Using Spongycastle slightly different and replaced some related calls
+

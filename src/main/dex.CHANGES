@@ -1,0 +1,7 @@
+# Changes
+>
+> Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
+>
+
+The only changes made, where the renaming of the top-level packagename from `com` to `com2`,
+in order to be able to deploy it on android devices within in application APK.
