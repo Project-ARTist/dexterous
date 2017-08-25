@@ -13,3 +13,4 @@ doc/tombstones
 gradle/
 gradlew*
 TaintingCompiler.iml
+res/*.apk

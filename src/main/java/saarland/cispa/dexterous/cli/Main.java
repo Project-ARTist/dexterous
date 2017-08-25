@@ -112,7 +112,7 @@ public class Main {
                     throw new ParseException(String.format("DexFile is invalid: %s", dexFile.getAbsolutePath()));
                 }
             }
-        } catch (final ParseException e) {
+        } catch (final ParseException|NullPointerException e) {
             Log.e(e.getMessage());
             usageExit();
         }
