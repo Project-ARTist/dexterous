@@ -30,7 +30,11 @@ android {
             // 'src/main/java'.
             java.srcDirs = ['src/main/java']
 
-            java.exclude '**/dexterous/cli/*.java'
+            java.excludes = [
+                    '**/dexterous/cli/*.java',
+                    '**/com/android/apksig/*',
+                    '**/com/android/apksigner/*'
+            ]
 
             // If you list multiple directories, Gradle uses all of them to collect
             // sources. Because Gradle gives these directories equal priority, if
