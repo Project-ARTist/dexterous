@@ -7,6 +7,94 @@
     <groupId>saarland.cispa.projects</groupId>
     <artifactId>dexterous</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.6.2</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <excludes>
+                            <exclude>**/cispa/artist/android/*</exclude>
+                            <exclude>**/cispa/apksigner/*</exclude>
+                        </excludes>
+                        <!--<testExcludes>-->
+                            <!--<testExclude>-->
+                                <!--<exclude>**/cispa/artist/android/*</exclude>-->
+                                <!--<exclude>**/cispa/apksigner/*</exclude>-->
+                            <!--</testExclude>-->
+                        <!--</testExcludes>-->
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <!--<addClasspath>true</addClasspath>-->
+                                <mainClass>saarland.cispa.dexterous.cli.Main</mainClass>
+                            </manifest>
+                        </archive>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                            <phase>package</phase> <!-- bind to the packaging phase -->
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
-    
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.madgag.spongycastle/core -->
+        <dependency>
+            <groupId>com.madgag.spongycastle</groupId>
+            <artifactId>core</artifactId>
+            <version>1.54.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.madgag.spongycastle/pkix -->
+        <dependency>
+            <groupId>com.madgag.spongycastle</groupId>
+            <artifactId>pkix</artifactId>
+            <version>1.54.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.madgag.spongycastle/prov -->
+        <dependency>
+            <groupId>com.madgag.spongycastle</groupId>
+            <artifactId>prov</artifactId>
+            <version>1.54.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/co.trikita/log -->
+        <dependency>
+            <groupId>co.trikita</groupId>
+            <artifactId>log</artifactId>
+            <version>1.1.5</version>
+        </dependency>
+    </dependencies>
+
 </project>
