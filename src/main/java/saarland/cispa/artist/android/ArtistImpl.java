@@ -19,7 +19,7 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist;
+package saarland.cispa.artist.android;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +41,6 @@ import saarland.cispa.apksigner.ApkZipSir;
 import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
 import saarland.cispa.artist.log.LogA;
 import saarland.cispa.artist.settings.ArtistRunConfig;
-import saarland.cispa.artist.utils.AndroidUtils;
 import saarland.cispa.artist.utils.ArtistInterruptedException;
 import saarland.cispa.artist.utils.ArtistUtils;
 import saarland.cispa.artist.utils.CompilationException;

@@ -43,7 +43,7 @@ import java.util.zip.ZipOutputStream;
 import comm.android.dex.Dex;
 import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
-import saarland.cispa.artist.ArtistCompilationTask;
+import saarland.cispa.artist.android.ArtistCompilationTask;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;

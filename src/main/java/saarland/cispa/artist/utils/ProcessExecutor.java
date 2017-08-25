@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import saarland.cispa.artist.android.AndroidUtils;
 import trikita.log.Log;
 
 public enum ProcessExecutor {

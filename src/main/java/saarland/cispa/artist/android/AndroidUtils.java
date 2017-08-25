@@ -19,7 +19,7 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.utils;
+package saarland.cispa.artist.android;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +34,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import saarland.cispa.artist.utils.GuiUtils;
+import saarland.cispa.artist.utils.ProcessExecutor;
 import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
