@@ -28,12 +28,12 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import saarland.cispa.apksigner.sign.Base64;
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 public class PasswordObfuscator {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
 
     private static PasswordObfuscator instance = null;
     

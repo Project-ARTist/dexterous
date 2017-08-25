@@ -39,7 +39,7 @@ import java.util.Locale;
 import saarland.cispa.apksigner.ApkSigner;
 import saarland.cispa.apksigner.ApkZipSir;
 import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.artist.log.LogA;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 import saarland.cispa.artist.utils.AndroidUtils;
 import saarland.cispa.artist.utils.ArtistInterruptedException;
@@ -318,12 +318,12 @@ public class ArtistImpl implements Artist {
         Log.d(TAG, "Starting the compilation process!");
         Log.d(TAG, "> Result will get placed at: " + config.app_oat_file_path);
 
-        Log.d(TAG, Logg.BigDivider());
+        Log.d(TAG, LogA.BigDivider());
 
         success = ProcessExecutor.execute(cmd_dex2oat_compile, true,
                 ProcessExecutor.processName(config.app_name, "dex2artist"));
 
-        Log.d(TAG, Logg.BigDivider());
+        Log.d(TAG, LogA.BigDivider());
 
         if (success) {
             Log.d(TAG, "Compilation was successfull");

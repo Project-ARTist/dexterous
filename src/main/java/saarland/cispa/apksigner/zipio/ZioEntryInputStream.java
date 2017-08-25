@@ -22,7 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.artist.log.LogA;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 
@@ -31,7 +32,7 @@ import trikita.log.Log;
  */
 public class ZioEntryInputStream extends InputStream {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
     RandomAccessFile raf;
     int size;
     int offset;
@@ -77,7 +78,7 @@ public class ZioEntryInputStream extends InputStream {
     @Override
     public int available() throws IOException {
         int available = size - offset;
-        Logg.v(TAG, String.format("Available = %d", available));
+        LogA.v(TAG, String.format("Available = %d", available));
         if (available == 0 && returnDummyByte) return 1;
         else return available;
     }
@@ -118,7 +119,7 @@ public class ZioEntryInputStream extends InputStream {
             if (monitor != null) monitor.write(b, off, numRead);
             offset += numRead;
         }
-        Logg.v(TAG, String.format("Read %d bytes for read(b,%d,%d)", numRead, off, len));
+        LogA.v(TAG, String.format("Read %d bytes for read(b,%d,%d)", numRead, off, len));
         return numRead;
     }
 

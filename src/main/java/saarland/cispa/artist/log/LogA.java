@@ -25,18 +25,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
-public class Logg {
-
-    public static final String TAG = "ArtistGui";
-
-    public static final String HR = "############################################";
-    public static final String PREF_KEY_LOGLEVEL = "pref_general_log_level";
+/** Logging Stuff General
+ *
+ *
+ */
+public class LogA {
 
 
     public static void setUserLogLevel(final Context context) {
-        setUserLogLevel(context, PREF_KEY_LOGLEVEL);
+        setUserLogLevel(context, LogG.PREF_KEY_LOGLEVEL);
     }
 
     public static void setUserLogLevel(final Context context, final String preference_key) {
@@ -71,18 +71,18 @@ public class Logg {
     }
 
     public static void logTest() {
-        Log.v(TAG, "Log Verbose");
-        Log.d(TAG, "Log Debug");
-        Log.i(TAG, "Log Info");
-        Log.w(TAG, "Log Warning");
-        Log.e(TAG, "Log Error");
+        Log.v(LogG.TAG, "Log Verbose");
+        Log.d(LogG.TAG, "Log Debug");
+        Log.i(LogG.TAG, "Log Info");
+        Log.w(LogG.TAG, "Log Warning");
+        Log.e(LogG.TAG, "Log Error");
     }
 
     public static String BigDivider() {
         final String bigDivider = "\n"
-                + HR + "\n"
-                + HR + "\n"
-                + HR + "\n"
+                + LogG.HR + "\n"
+                + LogG.HR + "\n"
+                + LogG.HR + "\n"
                 +  "\n";
 
         return bigDivider;

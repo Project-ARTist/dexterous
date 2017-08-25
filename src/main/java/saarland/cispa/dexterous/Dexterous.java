@@ -44,15 +44,15 @@ import comm.android.dex.Dex;
 import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
 import saarland.cispa.artist.ArtistCompilationTask;
-import saarland.cispa.artist.log.Logg;
 import saarland.cispa.artist.settings.ArtistRunConfig;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 import static saarland.cispa.dexterous.MultiDex.openMultiDexApk;
 
 public class Dexterous {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
 
     private String CODE_LIB_NAME;  // e.g. = "codelib.apk"
     private String CODE_LIB_DEX_NAME; // e.g. = "codelib.apk:classes.dex"

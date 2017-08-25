@@ -20,7 +20,7 @@ package saarland.cispa.apksigner.zipio;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 /**
@@ -28,7 +28,7 @@ import trikita.log.Log;
  */
 public class ZipListingHelper {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
     static DateFormat dateFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
 
     public static void listHeader() {

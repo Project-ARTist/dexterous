@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 /** Stringmanipulation utilities
@@ -36,7 +36,7 @@ import trikita.log.Log;
  */
 public class StringUtils {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
 
     public static List<String> convertToList(final StringBuffer outputBuffer) {
 

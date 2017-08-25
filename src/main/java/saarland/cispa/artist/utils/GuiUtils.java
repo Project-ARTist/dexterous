@@ -30,12 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import saarland.cispa.artist.StringUtils;
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 public class GuiUtils {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
 
     public static final String LIST_VIEW_SEPARATOR = "";
 

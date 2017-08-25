@@ -29,13 +29,14 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.artist.log.LogA;
+import saarland.cispa.log.LogG;
 
 /**
  *
  */
 public class ZipInput {
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
     public String inputFilename;
     RandomAccessFile in = null;
     long fileLength;
@@ -141,8 +142,8 @@ public class ZipInput {
             in.seek(posEOCDR);
             centralEnd = CentralEnd.read(this);
 
-            Logg.d(TAG, String.format("EOCD found in %d iterations", scanIterations));
-            Logg.d(TAG, String.format("Directory entries=%d, size=%d, offset=%d/0x%08x", centralEnd.totalCentralEntries,
+            LogA.d(TAG, String.format("EOCD found in %d iterations", scanIterations));
+            LogA.d(TAG, String.format("Directory entries=%d, size=%d, offset=%d/0x%08x", centralEnd.totalCentralEntries,
                     centralEnd.centralDirectorySize, centralEnd.centralStartOffset, centralEnd.centralStartOffset));
 
             ZipListingHelper.listHeader();

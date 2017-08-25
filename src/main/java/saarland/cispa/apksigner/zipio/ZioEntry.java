@@ -29,11 +29,12 @@ import java.util.zip.CRC32;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.artist.log.LogA;
+import saarland.cispa.log.LogG;
 
 public class ZioEntry implements Cloneable {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
 
     private ZipInput zipInput;
 
@@ -86,7 +87,7 @@ public class ZioEntry implements Cloneable {
         this.size = (int) zipInput.getFileLength();
         this.compressedSize = this.size;
 
-        Logg.v(TAG, String.format("Computing CRC for %s, size=%d", sourceDataFile, size));
+        LogA.v(TAG, String.format("Computing CRC for %s, size=%d", sourceDataFile, size));
 
         // compute CRC
         CRC32 crc = new CRC32();
@@ -143,7 +144,7 @@ public class ZioEntry implements Cloneable {
 
         input.seek(localHeaderOffset);
 
-        Logg.v(TAG, String.format("FILE POSITION: 0x%08x", input.getFilePointer()));
+        LogA.v(TAG, String.format("FILE POSITION: 0x%08x", input.getFilePointer()));
 
         // 0 	4 	Local file header signature = 0x04034b50
         int signature = input.readInt();
@@ -163,61 +164,61 @@ public class ZioEntry implements Cloneable {
         // 4 	2 	Version needed to extract (minimum)
         /* versionRequired */
         tmpShort = input.readShort();
-        Logg.v(TAG, String.format("Version required: 0x%04x", tmpShort /*versionRequired*/));
+        LogA.v(TAG, String.format("Version required: 0x%04x", tmpShort /*versionRequired*/));
 
         // 6 	2 	General purpose bit flag
         /* generalPurposeBits */
         tmpShort = input.readShort();
-        Logg.v(TAG, String.format("General purpose bits: 0x%04x", tmpShort /* generalPurposeBits */));
+        LogA.v(TAG, String.format("General purpose bits: 0x%04x", tmpShort /* generalPurposeBits */));
 
         // 8 	2 	Compression method
         /* compression */
         tmpShort = input.readShort();
-        Logg.v(TAG, String.format("Compression: 0x%04x", tmpShort /* compression */));
+        LogA.v(TAG, String.format("Compression: 0x%04x", tmpShort /* compression */));
 
         // 10 	2 	File last modification time
         /* modificationTime */
         tmpShort = input.readShort();
-        Logg.v(TAG, String.format("Modification time: 0x%04x", tmpShort /* modificationTime */));
+        LogA.v(TAG, String.format("Modification time: 0x%04x", tmpShort /* modificationTime */));
 
         // 12 	2 	File last modification date
         /* modificationDate */
         tmpShort = input.readShort();
-        Logg.v(TAG, String.format("Modification date: 0x%04x", tmpShort /* modificationDate */));
+        LogA.v(TAG, String.format("Modification date: 0x%04x", tmpShort /* modificationDate */));
 
         // 14 	4 	CRC-32
         /* crc32 */
         tmpInt = input.readInt();
-        Logg.v(TAG, String.format("CRC-32: 0x%04x", tmpInt /*crc32*/));
+        LogA.v(TAG, String.format("CRC-32: 0x%04x", tmpInt /*crc32*/));
 
         // 18 	4 	Compressed size
         /* compressedSize*/
         tmpInt = input.readInt();
-        Logg.v(TAG, String.format("Compressed size: 0x%04x", tmpInt /*compressedSize*/));
+        LogA.v(TAG, String.format("Compressed size: 0x%04x", tmpInt /*compressedSize*/));
 
         // 22 	4 	Uncompressed size
         /* size */
         tmpInt = input.readInt();
-        Logg.v(TAG, String.format("Size: 0x%04x", tmpInt /*size*/));
+        LogA.v(TAG, String.format("Size: 0x%04x", tmpInt /*size*/));
 
         // 26 	2 	File name length (n)
         short fileNameLen = input.readShort();
-        Logg.v(TAG, String.format("File name length: 0x%04x", fileNameLen));
+        LogA.v(TAG, String.format("File name length: 0x%04x", fileNameLen));
 
         // 28 	2 	Extra field length (m)
         short extraLen = input.readShort();
-        Logg.v(TAG, String.format("Extra length: 0x%04x", extraLen));
+        LogA.v(TAG, String.format("Extra length: 0x%04x", extraLen));
 
         // 30 	n 	File name      
         String filename = input.readString(fileNameLen);
-        Logg.v(TAG, "Filename: " + filename);
+        LogA.v(TAG, "Filename: " + filename);
 
         // Extra data
         byte[] extra = input.readBytes(extraLen);
 
         // Record the file position of this entry's data.
         dataPosition = input.getFilePointer();
-        Logg.v(TAG, String.format("Data position: 0x%08x", dataPosition));
+        LogA.v(TAG, String.format("Data position: 0x%08x", dataPosition));
 
     }
 
@@ -228,7 +229,7 @@ public class ZioEntry implements Cloneable {
 
         localHeaderOffset = (int) output.getFilePointer();
 
-        Logg.v(TAG, String.format("Writing local header at 0x%08x - %s", localHeaderOffset, filename));
+        LogA.v(TAG, String.format("Writing local header at 0x%08x - %s", localHeaderOffset, filename));
 
         if (entryOut != null) {
             entryOut.close();
@@ -281,13 +282,13 @@ public class ZioEntry implements Cloneable {
             output.writeBytes(alignBytes, 0, numAlignBytes);
         }
 
-        Logg.v(TAG, String.format("Data position 0x%08x", output.getFilePointer()));
+        LogA.v(TAG, String.format("Data position 0x%08x", output.getFilePointer()));
         if (data != null) {
             output.writeBytes(data);
-            Logg.v(TAG, String.format("Wrote %d bytes", data.length));
+            LogA.v(TAG, String.format("Wrote %d bytes", data.length));
         } else {
 
-            Logg.v(TAG, String.format("Seeking to position 0x%08x", dataPosition));
+            LogA.v(TAG, String.format("Seeking to position 0x%08x", dataPosition));
             zipInput.seek(dataPosition);
 
             int bufferSize = Math.min(compressedSize, 8096);
@@ -298,7 +299,7 @@ public class ZioEntry implements Cloneable {
                 int numRead = zipInput.in.read(buffer, 0, (int) Math.min(compressedSize - totalCount, bufferSize));
                 if (numRead > 0) {
                     output.writeBytes(buffer, 0, numRead);
-                    Logg.v(TAG, String.format("Wrote %d bytes", numRead));
+                    LogA.v(TAG, String.format("Wrote %d bytes", numRead));
                     totalCount += numRead;
                 } else
                     throw new IllegalStateException(String.format("EOF reached while copying %s with %d bytes left to go", filename, compressedSize - totalCount));
@@ -325,15 +326,15 @@ public class ZioEntry implements Cloneable {
     private void doRead(ZipInput input) throws IOException {
         // 4    2   Version needed to extract (minimum)
         versionMadeBy = input.readShort();
-        Logg.v(TAG, String.format("Version made by: 0x%04x", versionMadeBy));
+        LogA.v(TAG, String.format("Version made by: 0x%04x", versionMadeBy));
 
         // 4    2   Version required
         versionRequired = input.readShort();
-        Logg.v(TAG, String.format("Version required: 0x%04x", versionRequired));
+        LogA.v(TAG, String.format("Version required: 0x%04x", versionRequired));
 
         // 6    2   General purpose bit flag
         generalPurposeBits = input.readShort();
-        Logg.v(TAG, String.format("General purpose bits: 0x%04x", generalPurposeBits));
+        LogA.v(TAG, String.format("General purpose bits: 0x%04x", generalPurposeBits));
         // Bits 1, 2, 3, and 11 are allowed to be set (first bit is bit zero).  Any others are a problem.
         if ((generalPurposeBits & 0xF7F1) != 0x0000) {
             throw new IllegalStateException("Can't handle general purpose bits == " + String.format("0x%04x", generalPurposeBits));
@@ -341,59 +342,59 @@ public class ZioEntry implements Cloneable {
 
         // 8    2   Compression method
         compression = input.readShort();
-        Logg.v(TAG, String.format("Compression: 0x%04x", compression));
+        LogA.v(TAG, String.format("Compression: 0x%04x", compression));
 
         // 10   2   File last modification time
         modificationTime = input.readShort();
-        Logg.v(TAG, String.format("Modification time: 0x%04x", modificationTime));
+        LogA.v(TAG, String.format("Modification time: 0x%04x", modificationTime));
 
         // 12   2   File last modification date
         modificationDate = input.readShort();
-        Logg.v(TAG, String.format("Modification date: 0x%04x", modificationDate));
+        LogA.v(TAG, String.format("Modification date: 0x%04x", modificationDate));
 
         // 14   4   CRC-32
         crc32 = input.readInt();
-        Logg.v(TAG, String.format("CRC-32: 0x%04x", crc32));
+        LogA.v(TAG, String.format("CRC-32: 0x%04x", crc32));
 
         // 18   4   Compressed size
         compressedSize = input.readInt();
-        Logg.v(TAG, String.format("Compressed size: 0x%04x", compressedSize));
+        LogA.v(TAG, String.format("Compressed size: 0x%04x", compressedSize));
 
         // 22   4   Uncompressed size
         size = input.readInt();
-        Logg.v(TAG, String.format("Size: 0x%04x", size));
+        LogA.v(TAG, String.format("Size: 0x%04x", size));
 
         // 26   2   File name length (n)
         short fileNameLen = input.readShort();
-        Logg.v(TAG, String.format("File name length: 0x%04x", fileNameLen));
+        LogA.v(TAG, String.format("File name length: 0x%04x", fileNameLen));
 
         // 28   2   Extra field length (m)
         short extraLen = input.readShort();
-        Logg.v(TAG, String.format("Extra length: 0x%04x", extraLen));
+        LogA.v(TAG, String.format("Extra length: 0x%04x", extraLen));
 
         short fileCommentLen = input.readShort();
-        Logg.v(TAG, String.format("File comment length: 0x%04x", fileCommentLen));
+        LogA.v(TAG, String.format("File comment length: 0x%04x", fileCommentLen));
 
         diskNumberStart = input.readShort();
-        Logg.v(TAG, String.format("Disk number start: 0x%04x", diskNumberStart));
+        LogA.v(TAG, String.format("Disk number start: 0x%04x", diskNumberStart));
 
         internalAttributes = input.readShort();
-        Logg.v(TAG, String.format("Internal attributes: 0x%04x", internalAttributes));
+        LogA.v(TAG, String.format("Internal attributes: 0x%04x", internalAttributes));
 
         externalAttributes = input.readInt();
-        Logg.v(TAG, String.format("External attributes: 0x%08x", externalAttributes));
+        LogA.v(TAG, String.format("External attributes: 0x%08x", externalAttributes));
 
         localHeaderOffset = input.readInt();
-        Logg.v(TAG, String.format("Local header offset: 0x%08x", localHeaderOffset));
+        LogA.v(TAG, String.format("Local header offset: 0x%08x", localHeaderOffset));
 
         // 30   n   File name      
         filename = input.readString(fileNameLen);
-        Logg.v(TAG, "Filename: " + filename);
+        LogA.v(TAG, "Filename: " + filename);
 
         extraData = input.readBytes(extraLen);
 
         fileComment = input.readString(fileCommentLen);
-        Logg.v(TAG, "File comment: " + fileComment);
+        LogA.v(TAG, "File comment: " + fileComment);
 
         generalPurposeBits = (short) (generalPurposeBits & 0x0800); // Don't write a data descriptor, preserve UTF-8 encoded filename bit
 

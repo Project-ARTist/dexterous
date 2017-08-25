@@ -34,12 +34,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import saarland.cispa.artist.log.Logg;
+import saarland.cispa.log.LogG;
 import trikita.log.Log;
 
 public class AndroidUtils {
 
-    private static final String TAG = Logg.TAG;
+    private static final String TAG = LogG.TAG;
 
     public static final int FILE_BUFFER_DEFAULT_SIZE = 4096;
 
