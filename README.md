@@ -4,7 +4,7 @@ Dexterous is a commandline interface to ARTist'S partial dex merging and apk-pac
 
 But that's not it's only functionality. You can also use it as an in depth dex anylsis framework.
 
-Take a look at the class: [`saarland.cispa.dexterous.cli.Dexterously` as a start](dexterous/blob/master/src/main/java/saarland/cispa/dexterous/cli/Dexterously.java)
+Take a look at the class: [`saarland.cispa.dexterous.cli.Dexterously`](src/main/java/saarland/cispa/dexterous/cli/Dexterously.java)  as a starting point to implement your own analysis.
 
 You can build  a fat jar with all depedencies with the following command:
 
