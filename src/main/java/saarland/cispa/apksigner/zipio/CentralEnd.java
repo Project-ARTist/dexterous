@@ -19,7 +19,7 @@ package saarland.cispa.apksigner.zipio;
 
 import java.io.IOException;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 public class CentralEnd {

@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

@@ -29,9 +29,8 @@ import android.widget.Toast;
 import java.util.Iterator;
 import java.util.List;
 
-import saarland.cispa.artist.StringUtils;
-import saarland.cispa.artist.android.ProcessExecutor;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.utils.StringUtils;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 public class GuiUtils {

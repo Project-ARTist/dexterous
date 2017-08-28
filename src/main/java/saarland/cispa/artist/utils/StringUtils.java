@@ -19,7 +19,7 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist;
+package saarland.cispa.artist.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /** Stringmanipulation utilities

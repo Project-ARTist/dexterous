@@ -28,7 +28,7 @@ import java.security.Security;
 import saarland.cispa.apksigner.security.CustomKeySigner;
 import saarland.cispa.apksigner.sign.ZipSigner;
 import saarland.cispa.artist.settings.ArtistRunConfig;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

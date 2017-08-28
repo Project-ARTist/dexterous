@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 public class AndroidUtils {

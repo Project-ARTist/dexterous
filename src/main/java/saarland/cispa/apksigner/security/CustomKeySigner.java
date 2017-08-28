@@ -24,7 +24,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import saarland.cispa.apksigner.sign.ZipSigner;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

@@ -1,4 +1,4 @@
-package saarland.cispa.log;
+package saarland.cispa.artist.log;
 
 /**
  * @author Sebastian Weisgerber (weisgerber@cispa.saarland)

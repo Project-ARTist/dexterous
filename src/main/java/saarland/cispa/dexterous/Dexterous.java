@@ -45,7 +45,7 @@ import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 import saarland.cispa.artist.utils.ArtistThread;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 import static saarland.cispa.dexterous.MultiDex.openMultiDexApk;

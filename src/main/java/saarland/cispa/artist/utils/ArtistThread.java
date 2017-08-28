@@ -1,6 +1,6 @@
 package saarland.cispa.artist.utils;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

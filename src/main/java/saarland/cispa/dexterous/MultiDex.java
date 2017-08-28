@@ -24,7 +24,7 @@ package saarland.cispa.dexterous;
 import comm.android.dex.Dex;
 import comm.android.dex.DexFormat;
 import comm.android.dex.util.FileUtils;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 import java.io.*;

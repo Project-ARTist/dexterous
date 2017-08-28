@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /*

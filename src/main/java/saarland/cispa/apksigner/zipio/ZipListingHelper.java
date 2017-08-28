@@ -20,7 +20,7 @@ package saarland.cispa.apksigner.zipio;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

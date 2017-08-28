@@ -28,10 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
 import saarland.cispa.artist.settings.ArtistRunConfig;
-import saarland.cispa.artist.utils.ArtistInterruptedException;
-import saarland.cispa.artist.utils.ArtistThread;
 import trikita.log.Log;
 
 public class ArtistCompilationTask implements Callable, ArtistGuiProgress {

@@ -22,7 +22,7 @@ import org.spongycastle.util.encoders.HexTranslator;
 import java.security.MessageDigest;
 
 import saarland.cispa.apksigner.sign.Base64;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

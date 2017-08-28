@@ -38,13 +38,11 @@ import java.util.Locale;
 
 import saarland.cispa.apksigner.ApkSigner;
 import saarland.cispa.apksigner.ApkZipSir;
-import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 import saarland.cispa.artist.utils.ArtistInterruptedException;
 import saarland.cispa.artist.utils.ArtistThread;
 import saarland.cispa.artist.utils.ArtistUtils;
 import saarland.cispa.artist.utils.CompilationException;
-import saarland.cispa.artist.android.ProcessExecutor;
 import saarland.cispa.dexterous.Dexterous;
 import trikita.log.Log;
 

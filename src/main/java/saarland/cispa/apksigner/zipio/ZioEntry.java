@@ -30,7 +30,7 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import saarland.cispa.artist.android.LogA;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 
 public class ZioEntry implements Cloneable {
 

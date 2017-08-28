@@ -77,7 +77,7 @@ import saarland.cispa.apksigner.security.CustomKeySigner;
 import saarland.cispa.apksigner.zipio.ZioEntry;
 import saarland.cispa.apksigner.zipio.ZipInput;
 import saarland.cispa.apksigner.zipio.ZipOutput;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

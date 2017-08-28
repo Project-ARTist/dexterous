@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import saarland.cispa.artist.android.LogA;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 
 /**
  *

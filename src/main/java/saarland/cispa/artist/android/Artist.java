@@ -21,10 +21,8 @@
  */
 package saarland.cispa.artist.android;
 
-import android.app.Activity;
 import android.content.Context;
 
-import saarland.cispa.artist.gui.artist.ArtistGuiProgress;
 import saarland.cispa.artist.settings.ArtistRunConfig;
 
 public interface Artist {

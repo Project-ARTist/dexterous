@@ -31,7 +31,7 @@ import java.security.KeyStore;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**

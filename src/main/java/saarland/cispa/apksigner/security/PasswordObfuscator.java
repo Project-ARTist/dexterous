@@ -28,7 +28,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import saarland.cispa.apksigner.sign.Base64;
-import saarland.cispa.log.LogG;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 public class PasswordObfuscator {

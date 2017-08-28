@@ -19,7 +19,7 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.gui.artist;
+package saarland.cispa.artist.android;
 
 public interface ArtistGuiProgress {
 
