@@ -33,13 +33,13 @@ e.g.: `java -jar dexterous.jar my_application.apk --codelib codelib.apk --build-
 
 ### Analyse apk only
 
-> Execute dexterosu without the build / sign flags
+> Execute dexterous without the build / sign flags
 
 `java -jar dexterous.jar my_application.apk`
 
 ## Third-party code usage:
 
-dexterous uses a lot of third-party code.
+> dexterous uses a lot of third-party code:
 
 ### Dependency libraries:
 
