@@ -6,11 +6,18 @@ But that's not it's only functionality. You can also use it as an in depth dex a
 
 Take a look at the class: [`saarland.cispa.dexterous.cli.Dexterously`](src/main/java/saarland/cispa/dexterous/cli/Dexterously.java)  as a starting point to implement your own analysis.
 
+## Build
+
 You can build  a fat jar with all depedencies with the following command:
 
 ``` bash
 gradle DexterousJar
 ```
+### Build files
+
+`desktop.gradle` is the build file for the desktop build.
+
+`build.gradle` is the build file for the android-library build.
 
 It implicitely uses the bundle debug keystore: `res/artist-debug.keystore`.
 
