@@ -213,8 +213,9 @@ public class Dexterous {
     private Dex mergeCodeLibReference(final String dexName, final Dex dexFile, final boolean saveDexFile) {
 
         Dex mergedDexContent = null;
+        dexFile.setName(dexName);
         try {
-            DexMerger dexMerger = new DexMerger(new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)}, CollisionPolicy.FAIL);
+            DexMerger dexMerger = new DexMerger(new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)}, CODE_LIB_DEX_NAME, CollisionPolicy.FAIL);
             mergedDexContent = dexMerger.mergeMethodsOnly();
 
         } catch (final IOException e) {
