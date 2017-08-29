@@ -56,6 +56,7 @@ public final class Dex {
     // Provided as a convenience to avoid a memory allocation to benefit Dalvik.
     // Note: libcore.util.EmptyArray cannot be accessed when this code isn't run on Dalvik.
     static final short[] EMPTY_SHORT_ARRAY = new short[0];
+    private String dexName = "";
 
     private ByteBuffer data;
     private final TableOfContents tableOfContents = new TableOfContents();
@@ -100,12 +101,14 @@ public final class Dex {
      * Creates a new dex buffer from the dex file {@code file}.
      */
     public Dex(File file) throws IOException {
+        this.dexName = file.getName();
         if (FileUtils.hasArchiveSuffix(file.getName())) {
             ZipFile zipFile = new ZipFile(file);
             ZipEntry entry = zipFile.getEntry(DexFormat.DEX_IN_JAR_NAME);
             if (entry != null) {
                 loadFrom(zipFile.getInputStream(entry));
                 zipFile.close();
+                this.dexName = this.dexName + ":" + DexFormat.DEX_IN_JAR_NAME;
             } else {
                 throw new DexException("Expected " + DexFormat.DEX_IN_JAR_NAME + " in " + file);
             }
@@ -508,6 +511,14 @@ public final class Dex {
             position += SizeOf.USHORT;
         }
         return types;
+    }
+
+    public String getName() {
+        return this.dexName;
+    }
+
+    public void setName(final String dexName) {
+        this.dexName = dexName;
     }
 
     public final class Section implements ByteInput, ByteOutput {

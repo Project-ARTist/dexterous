@@ -31,6 +31,7 @@ import comm.android.dex.ProtoId;
 import comm.android.dex.SizeOf;
 import comm.android.dex.TableOfContents;
 import comm.android.dex.TypeList;
+import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import java.util.*;
  * Combine two dex files into one.
  */
 public final class DexMerger {
+    private static final Object TAG = LogG.TAG;
     private final Dex[] dexes;
     private final IndexMap[] indexMaps;
 
@@ -83,20 +85,22 @@ public final class DexMerger {
     private final TableOfContents contentsOut;
 
     private final InstructionTransformer instructionTransformer;
+    private final String codelibDexName;
 
     /** minimum number of wasted bytes before it's worthwhile to compact the result */
     private int compactWasteThreshold = 1024 * 1024; // 1MiB
 
-    public DexMerger(Dex[] dexes, CollisionPolicy collisionPolicy)
+    public DexMerger(Dex[] dexes, final String codelibDexName, CollisionPolicy collisionPolicy)
             throws IOException {
-        this(dexes, collisionPolicy, new WriterSizes(dexes));
+        this(dexes, codelibDexName, collisionPolicy, new WriterSizes(dexes));
     }
 
-    private DexMerger(Dex[] dexes, CollisionPolicy collisionPolicy,
-            WriterSizes writerSizes) throws IOException {
+    private DexMerger(Dex[] dexes, final String codelibDexName, CollisionPolicy collisionPolicy,
+                      WriterSizes writerSizes) throws IOException {
         this.dexes = dexes;
         this.collisionPolicy = collisionPolicy;
         this.writerSizes = writerSizes;
+        this.codelibDexName = codelibDexName;
 
         dexOut = new Dex(writerSizes.size());
 
@@ -246,7 +250,7 @@ public final class DexMerger {
         int wastedByteCount = writerSizes.size() - compactedSizes.size();
         if (wastedByteCount >  + compactWasteThreshold) {
             DexMerger compacter = new DexMerger(
-                    new Dex[] {dexOut, new Dex(0)}, CollisionPolicy.FAIL, compactedSizes);
+                    new Dex[] {dexOut, new Dex(0)}, this.codelibDexName, CollisionPolicy.FAIL, compactedSizes);
             result = compacter.mergeDexes();
             System.out.printf("Result compacted from %.1fKiB to %.1fKiB to save %.1fKiB%n",
                     dexOut.getLength() / 1024f,
@@ -638,8 +642,9 @@ public final class DexMerger {
         // size is pessimistic; doesn't include arrays
         SortableType[] sortableTypes = new SortableType[contentsOut.typeIds.size];
         for (int i = 0; i < dexes.length; i++) {
+            Log.v(TAG, String.format("getMainDexSortedTypes() Dex: %s", dexes[i].getName()));
             if (isCodeLibDexFile(dexes[i])) {
-                Log.i(String.format("Skipping CodeLib because of small MethodCount: %d", dexes[i].methodIds().size()));
+                Log.i(String.format("Skipping CodeLib (MethodCount: %d)", dexes[i].methodIds().size()));
                 continue;
             }
             readSortableTypes(sortableTypes, dexes[i], indexMaps[i]);
@@ -673,11 +678,10 @@ public final class DexMerger {
                 : sortableTypes;
     }
 
-    private boolean isCodeLibDexFile(Dex dex) {
-        if (dex.methodIds().size() < 200) {
-            return true;
-        }
-        return false;
+    private boolean isCodeLibDexFile(final Dex dex) {
+        final boolean isCodelib = dex.getName().equals(this.codelibDexName);
+        Log.i(TAG, String.format("isCodeLibDexFile() ? %b [Dex: `%s` (CodeLib: `%s`)]", isCodelib, dex.getName(), this.codelibDexName));
+        return isCodelib;
     }
 
     /**
@@ -1213,24 +1217,24 @@ public final class DexMerger {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        if (args.length < 2) {
-            printUsage();
-            return;
-        }
-
-        Dex[] dexes = new Dex[args.length - 1];
-        for (int i = 1; i < args.length; i++) {
-            dexes[i - 1] = new Dex(new File(args[i]));
-        }
-        Dex merged = new DexMerger(dexes, CollisionPolicy.KEEP_FIRST).merge();
-        merged.writeTo(new File(args[0]));
-    }
-
-    private static void printUsage() {
-        System.out.println("Usage: DexMerger <out.dex> <a.dex> <b.dex> ...");
-        System.out.println();
-        System.out.println(
-            "If a class is defined in several dex, the class found in the first dex will be used.");
-    }
+//    public static void main(String[] args) throws IOException {
+//        if (args.length < 2) {
+//            printUsage();
+//            return;
+//        }
+//
+//        Dex[] dexes = new Dex[args.length - 1];
+//        for (int i = 1; i < args.length; i++) {
+//            dexes[i - 1] = new Dex(new File(args[i]));
+//        }
+//        Dex merged = new DexMerger(dexes, "", CollisionPolicy.KEEP_FIRST).merge();
+//        merged.writeTo(new File(args[0]));
+//    }
+//
+//    private static void printUsage() {
+//        System.out.println("Usage: DexMerger <out.dex> <a.dex> <b.dex> ...");
+//        System.out.println();
+//        System.out.println(
+//            "If a class is defined in several dex, the class found in the first dex will be used.");
+//    }
 }

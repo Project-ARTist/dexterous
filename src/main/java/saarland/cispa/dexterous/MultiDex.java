@@ -68,7 +68,9 @@ public class MultiDex {
                         break;
                     }
                     try {
-                        dexBuffers.put(FULL_DEX_PATH, new Dex(zipFile.getInputStream(entry)));
+                        final Dex localDex = new Dex(zipFile.getInputStream(entry));
+                        localDex.setName(FULL_DEX_PATH);
+                        dexBuffers.put(FULL_DEX_PATH, localDex);
                     } catch (final IOException e) {
                         Log.e(TAG, e);
                         Log.e(TAG, "Could not open DexFile: " + FULL_DEX_PATH);
