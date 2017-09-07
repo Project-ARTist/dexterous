@@ -28,18 +28,18 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import saarland.cispa.apksigner.sign.Base64;
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 public class PasswordObfuscator {
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     private static PasswordObfuscator instance = null;
     
-    static final String x = "harold-and-maude";   
+    private static final String x = "harold-and-maude";
 
-    SecretKeySpec skeySpec;
+    private SecretKeySpec skeySpec;
     
     private PasswordObfuscator() {
         skeySpec = new SecretKeySpec(x.getBytes(), "AES");

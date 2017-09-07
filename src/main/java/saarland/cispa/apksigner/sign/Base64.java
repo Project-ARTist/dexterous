@@ -21,7 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogA;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 /*
@@ -49,7 +50,7 @@ public class Base64 {
     static Object bDecoder = null; // Reference to an org.bouncycastle.util.encoders.Base64Encoder instance, if available
     static Method bDecodeMethod = null;  // Reference to the bEncoder.encode() method, if available    
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     static {
 

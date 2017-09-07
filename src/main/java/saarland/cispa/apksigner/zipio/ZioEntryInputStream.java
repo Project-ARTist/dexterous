@@ -21,11 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.Locale;
 
-import saarland.cispa.artist.android.LogA;
-import saarland.cispa.artist.log.LogG;
 
-import trikita.log.Log;
+import saarland.cispa.utils.LogA;
+import saarland.cispa.utils.LogUtils;
 
 
 /**
@@ -33,11 +33,10 @@ import trikita.log.Log;
  */
 public class ZioEntryInputStream extends InputStream {
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
     RandomAccessFile raf;
     int size;
     int offset;
-    boolean debug;
     boolean returnDummyByte = false;
     OutputStream monitor = null;
 
@@ -48,7 +47,7 @@ public class ZioEntryInputStream extends InputStream {
         raf = entry.getZipInput().in;
         long dpos = entry.getDataPosition();
         if (dpos >= 0) {
-            Log.d(TAG, String.format("Seeking to %d", entry.getDataPosition()));
+            LogA.d(TAG, String.format(Locale.getDefault(), "Seeking to %d", entry.getDataPosition()));
             raf.seek(entry.getDataPosition());
         } else {
             // seeks to, then reads, the local header, causing the 
@@ -79,7 +78,7 @@ public class ZioEntryInputStream extends InputStream {
     @Override
     public int available() throws IOException {
         int available = size - offset;
-        LogA.v(TAG, String.format("Available = %d", available));
+        LogA.v(TAG, String.format(Locale.getDefault(), "Available = %d", available));
         if (available == 0 && returnDummyByte) return 1;
         else return available;
     }
@@ -95,9 +94,9 @@ public class ZioEntryInputStream extends InputStream {
         int b = raf.read();
         if (b >= 0) {
             if (monitor != null) monitor.write(b);
-            Log.d(TAG, "Read 1 byte");
+            LogA.d(TAG, "Read 1 byte");
             offset += 1;
-        } else Log.d(TAG, "Read 0 bytes");
+        } else LogA.d(TAG, "Read 0 bytes");
         return b;
     }
 
@@ -120,7 +119,7 @@ public class ZioEntryInputStream extends InputStream {
             if (monitor != null) monitor.write(b, off, numRead);
             offset += numRead;
         }
-        LogA.v(TAG, String.format("Read %d bytes for read(b,%d,%d)", numRead, off, len));
+        LogA.v(TAG, String.format(Locale.getDefault(), "Read %d bytes for read(b,%d,%d)", numRead, off, len));
         return numRead;
     }
 
@@ -133,7 +132,7 @@ public class ZioEntryInputStream extends InputStream {
     public long skip(long n) throws IOException {
         long numToSkip = Math.min(n, available());
         raf.seek(raf.getFilePointer() + numToSkip);
-        Log.d(TAG, String.format("Skipped %d bytes", numToSkip));
+        LogA.d(TAG, String.format(Locale.getDefault(), "Skipped %d bytes", numToSkip));
         return numToSkip;
     }
 }

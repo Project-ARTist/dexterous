@@ -31,14 +31,14 @@ import java.security.KeyStore;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 /**
  */
 public class KeyStoreFileManager {
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     public static KeyStore loadKeyStore(String keystorePath, String encodedPassword)
             throws Exception {

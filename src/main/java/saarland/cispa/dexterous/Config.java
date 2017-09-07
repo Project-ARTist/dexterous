@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @author "Oliver Schranz <oliver.schranz@cispa.saarland>"
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
+ * @author "Oliver Schranz <oliver.schranz@cispa.saarland>"
  *
  */
 package saarland.cispa.dexterous;
@@ -30,14 +30,14 @@ public class Config {
 
     public static boolean analyze_apk = true;
 
-    public static boolean build_apk = false;
-    public static boolean sign_apk = false;
+    public boolean build_apk = false;
+    public boolean sign_apk = false;
 
-    public static File codelib = null;
+    public File codelib = null;
 
-    public static List<File> dexFiles = new ArrayList<>();
+    public List<File> dexFiles = new ArrayList<>();
 
-    final public static List<String> NO_COMPRESS_EXTENSIONS = Arrays.asList(
+    final static List<String> NO_COMPRESS_EXTENSIONS = Arrays.asList(
             ".jpg", ".jpeg", ".png", ".gif",
             ".wav", ".mp2", ".mp3", ".ogg", ".aac",
             ".mpg", ".mpeg", ".mid", ".midi", ".smf", ".jet",

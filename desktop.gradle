@@ -32,7 +32,7 @@ sourceSets {
             srcDir 'src'
             excludes = [
                     '**/saarland/cispa/apksigner/*',
-                    '**/saarland/cispa/artist/android/*'
+                    '**/saarland/cispa/utils/LogA.java'
             ]
        }
    }

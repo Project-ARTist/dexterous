@@ -16,36 +16,18 @@
  * limitations under the License.
  *
  * @author "Oliver Schranz <oliver.schranz@cispa.saarland>"
- * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.android;
+package saarland.cispa.dexterous;
 
+public class MergeConfig {
+    public String codelibName;
+    public String mergedApkPath;
+    public String apkPath;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
-
-public class CompilationResultReceiver extends ResultReceiver {
-
-    private Receiver mReceiver;
-
-    public CompilationResultReceiver(Handler handler) {
-        super(handler);
-    }
-
-    public void setReceiver(Receiver receiver) {
-        mReceiver = receiver;
-    }
-
-    public interface Receiver {
-        public void onReceiveResult(int resultCode, Bundle resultData);
-    }
-
-    @Override
-    protected void onReceiveResult(int resultCode, Bundle resultData) {
-        if (mReceiver != null) {
-            mReceiver.onReceiveResult(resultCode, resultData);
-        }
+    public MergeConfig(String codelibName, String mergedApkPath, String apkPath) {
+        this.codelibName = codelibName;
+        this.mergedApkPath = mergedApkPath;
+        this.apkPath = apkPath;
     }
 }

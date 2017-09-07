@@ -24,7 +24,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import saarland.cispa.apksigner.sign.ZipSigner;
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 /**
@@ -32,7 +32,7 @@ import trikita.log.Log;
 public class CustomKeySigner {
 
     public static final String KEY_NAME_CUSTOM = "custom";
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     /** KeyStore-type agnostic.  This method will sign the zip file, automatically handling JKS or BKS keystores. */
     public static void signZip( ZipSigner zipSigner,

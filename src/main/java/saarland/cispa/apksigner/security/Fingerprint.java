@@ -22,7 +22,7 @@ import org.spongycastle.util.encoders.HexTranslator;
 import java.security.MessageDigest;
 
 import saarland.cispa.apksigner.sign.Base64;
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 /**
@@ -32,9 +32,9 @@ import trikita.log.Log;
 public class Fingerprint {
 
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
-    static byte[] calcDigest(String algorithm, byte[] encodedCert) {
+    private static byte[] calcDigest(String algorithm, byte[] encodedCert) {
         byte[] result = null;
         try {
             MessageDigest messageDigest = MessageDigest.getInstance(algorithm);

@@ -26,14 +26,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogA;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 /**
  *
  */
 public class ZipOutput {
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     String outputFilename;
     OutputStream out = null;

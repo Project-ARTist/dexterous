@@ -31,10 +31,9 @@ import comm.android.dex.ProtoId;
 import comm.android.dex.SizeOf;
 import comm.android.dex.TableOfContents;
 import comm.android.dex.TypeList;
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -42,7 +41,7 @@ import java.util.*;
  * Combine two dex files into one.
  */
 public final class DexMerger {
-    private static final Object TAG = LogG.TAG;
+    private static final Object TAG = LogUtils.TAG;
     private final Dex[] dexes;
     private final IndexMap[] indexMaps;
 
@@ -412,8 +411,8 @@ public final class DexMerger {
 
     private int mergeApiLevels() {
         int maxApi = -1;
-        for (int i = 0; i < dexes.length; i++) {
-            int dexMinApi = dexes[i].getTableOfContents().apiLevel;
+        for (Dex dex : dexes) {
+            int dexMinApi = dex.getTableOfContents().apiLevel;
             if (maxApi < dexMinApi) {
                 maxApi = dexMinApi;
             }

@@ -27,8 +27,6 @@ import java.security.Security;
 
 import saarland.cispa.apksigner.security.CustomKeySigner;
 import saarland.cispa.apksigner.sign.ZipSigner;
-import saarland.cispa.artist.settings.ArtistRunConfig;
-import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 /**
@@ -53,15 +51,15 @@ public class ApkZipSir implements ApkSigner {
     // Key
     private static final String KEY_ALIAS = "artist";
     private static final String PASSWORD_KEY = "android";
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = "ApkZipSir";
 
     private String signedApkPath;
 
-    public ApkZipSir(final ArtistRunConfig config) {
+    public ApkZipSir(final String signedApkPath) {
         for (Provider secProvider : Security.getProviders()) {
             Log.d(TAG, "> Provider: " + secProvider.getName());
         }
-        this.signedApkPath = config.app_apk_merged_signed_file_path;
+        this.signedApkPath = signedApkPath;
     }
 
     @Override

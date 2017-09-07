@@ -19,24 +19,21 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.android;
+package saarland.cispa.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
-/** Logging Stuff General
- *
- *
- */
+// TODO most of this code is duplicated in ArtistGui AND Dexterous. Refactor!
+
+// Filtering logs before publishing them to logcat.
 public class LogA {
 
-
     public static void setUserLogLevel(final Context context) {
-        setUserLogLevel(context, LogG.PREF_KEY_LOGLEVEL);
+        setUserLogLevel(context, "pref_general_log_level");
     }
 
     public static void setUserLogLevel(final Context context, final String preference_key) {
@@ -68,24 +65,6 @@ public class LogA {
                 Log.v("setUserLogLevel: " + logLevel + " DEFAULT (Debug)");
                 break;
         }
-    }
-
-    public static void logTest() {
-        Log.v(LogG.TAG, "Log Verbose");
-        Log.d(LogG.TAG, "Log Debug");
-        Log.i(LogG.TAG, "Log Info");
-        Log.w(LogG.TAG, "Log Warning");
-        Log.e(LogG.TAG, "Log Error");
-    }
-
-    public static String BigDivider() {
-        final String bigDivider = "\n"
-                + LogG.HR + "\n"
-                + LogG.HR + "\n"
-                + LogG.HR + "\n"
-                +  "\n";
-
-        return bigDivider;
     }
 
     /**

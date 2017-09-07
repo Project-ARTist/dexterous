@@ -25,16 +25,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.util.Date;
+import java.util.Locale;
 import java.util.zip.CRC32;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import saarland.cispa.artist.android.LogA;
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogA;
+import saarland.cispa.utils.LogUtils;
+
 
 public class ZioEntry implements Cloneable {
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     private ZipInput zipInput;
 
@@ -87,7 +89,8 @@ public class ZioEntry implements Cloneable {
         this.size = (int) zipInput.getFileLength();
         this.compressedSize = this.size;
 
-        LogA.v(TAG, String.format("Computing CRC for %s, size=%d", sourceDataFile, size));
+        LogA.v(TAG, String.format(Locale.getDefault(), "Computing CRC for %s, size=%d",
+                sourceDataFile, size));
 
         // compute CRC
         CRC32 crc = new CRC32();
@@ -112,7 +115,8 @@ public class ZioEntry implements Cloneable {
     }
 
 
-    public ZioEntry(String name, String sourceDataFile, short compression, int crc32, int compressedSize, int size)
+    public ZioEntry(String name, String sourceDataFile, short compression, int crc32,
+                    int compressedSize, int size)
             throws IOException {
         zipInput = new ZipInput(sourceDataFile);
         filename = name;
@@ -149,7 +153,8 @@ public class ZioEntry implements Cloneable {
         // 0 	4 	Local file header signature = 0x04034b50
         int signature = input.readInt();
         if (signature != 0x04034b50) {
-            throw new IllegalStateException(String.format("Local header not found at pos=0x%08x, file=%s", input.getFilePointer(), filename));
+            throw new IllegalStateException(String.format("Local header not found at pos=0x%08x, file=%s",
+                    input.getFilePointer(), filename));
         }
 
         // This method is usually called just before the data read, so
@@ -229,7 +234,8 @@ public class ZioEntry implements Cloneable {
 
         localHeaderOffset = (int) output.getFilePointer();
 
-        LogA.v(TAG, String.format("Writing local header at 0x%08x - %s", localHeaderOffset, filename));
+        LogA.v(TAG, String.format("Writing local header at 0x%08x - %s", localHeaderOffset,
+                filename));
 
         if (entryOut != null) {
             entryOut.close();
@@ -285,7 +291,7 @@ public class ZioEntry implements Cloneable {
         LogA.v(TAG, String.format("Data position 0x%08x", output.getFilePointer()));
         if (data != null) {
             output.writeBytes(data);
-            LogA.v(TAG, String.format("Wrote %d bytes", data.length));
+            LogA.v(TAG, String.format(Locale.getDefault(), "Wrote %d bytes", data.length));
         } else {
 
             LogA.v(TAG, String.format("Seeking to position 0x%08x", dataPosition));
@@ -296,13 +302,16 @@ public class ZioEntry implements Cloneable {
             long totalCount = 0;
 
             while (totalCount != compressedSize) {
-                int numRead = zipInput.in.read(buffer, 0, (int) Math.min(compressedSize - totalCount, bufferSize));
+                int numRead = zipInput.in.read(buffer, 0, (int) Math.min(compressedSize - totalCount,
+                        bufferSize));
                 if (numRead > 0) {
                     output.writeBytes(buffer, 0, numRead);
-                    LogA.v(TAG, String.format("Wrote %d bytes", numRead));
+                    LogA.v(TAG, String.format(Locale.getDefault(), "Wrote %d bytes", numRead));
                     totalCount += numRead;
                 } else
-                    throw new IllegalStateException(String.format("EOF reached while copying %s with %d bytes left to go", filename, compressedSize - totalCount));
+                    throw new IllegalStateException(String.format(Locale.getDefault(),
+                            "EOF reached while copying %s with %d bytes left to go", filename,
+                            compressedSize - totalCount));
             }
         }
     }
@@ -337,7 +346,8 @@ public class ZioEntry implements Cloneable {
         LogA.v(TAG, String.format("General purpose bits: 0x%04x", generalPurposeBits));
         // Bits 1, 2, 3, and 11 are allowed to be set (first bit is bit zero).  Any others are a problem.
         if ((generalPurposeBits & 0xF7F1) != 0x0000) {
-            throw new IllegalStateException("Can't handle general purpose bits == " + String.format("0x%04x", generalPurposeBits));
+            throw new IllegalStateException("Can't handle general purpose bits == "
+                    + String.format("0x%04x", generalPurposeBits));
         }
 
         // 8    2   Compression method
@@ -421,7 +431,8 @@ public class ZioEntry implements Cloneable {
         while (count != size) {
             int numRead = din.read(tmpdata, count, size - count);
             if (numRead < 0)
-                throw new IllegalStateException(String.format("Read failed, expecting %d bytes, got %d instead", size, count));
+                throw new IllegalStateException(String.format(Locale.getDefault(),
+                        "Read failed, expecting %d bytes, got %d instead", size, count));
             count += numRead;
         }
         return tmpdata;

@@ -77,7 +77,8 @@ import saarland.cispa.apksigner.security.CustomKeySigner;
 import saarland.cispa.apksigner.zipio.ZioEntry;
 import saarland.cispa.apksigner.zipio.ZipInput;
 import saarland.cispa.apksigner.zipio.ZipOutput;
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogA;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 /**
@@ -88,7 +89,7 @@ import trikita.log.Log;
  * Please see the README.txt file in the root of this project for usage instructions.
  */
 public class ZipSigner {
-    private static String TAG = LogG.TAG;
+    private static String TAG = LogUtils.TAG;
 
     private boolean canceled = false;
 

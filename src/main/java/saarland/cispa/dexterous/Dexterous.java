@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -43,29 +44,26 @@ import java.util.zip.ZipOutputStream;
 import comm.android.dex.Dex;
 import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
-import saarland.cispa.artist.settings.ArtistRunConfig;
-import saarland.cispa.artist.utils.ArtistThread;
-import saarland.cispa.artist.log.LogG;
 import trikita.log.Log;
 
 import static saarland.cispa.dexterous.MultiDex.openMultiDexApk;
 
 public class Dexterous {
 
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = "Dexterous";
 
     private String CODE_LIB_NAME;  // e.g. = "codelib.apk"
     private String CODE_LIB_DEX_NAME; // e.g. = "codelib.apk:classes.dex"
 
-    private final ArtistRunConfig config;
+    private final MergeConfig config;
 
     private Map<String, Dex> dexBuffers = null;
 
     private Set<String> dexSourceFiles = null;
 
-    public Dexterous(final ArtistRunConfig config) {
+    public Dexterous(final MergeConfig config) {
         this.config = config;
-        this.CODE_LIB_NAME = config.codeLib.getName();
+        this.CODE_LIB_NAME = config.codelibName;
         this.CODE_LIB_DEX_NAME = this.CODE_LIB_NAME + ":classes.dex";
 
         this.dexBuffers = new LinkedHashMap<>();
@@ -122,14 +120,14 @@ public class Dexterous {
         Log.i(TAG, "");
         Log.i(TAG, "# Building APK");
 
-        Log.i(TAG, String.format("Building APK: %s (was: %s)", config.app_apk_merged_file_path,
-                config.app_apk_file_path));
+        Log.i(TAG, String.format("Building APK: %s (was: %s)", config.mergedApkPath,
+                config.apkPath));
 
         InputStream apk_original = null;
         OutputStream apk_injected = null;
         try {
-            apk_original = new FileInputStream(new File(config.app_apk_file_path));
-            apk_injected = new FileOutputStream(new File(config.app_apk_merged_file_path));
+            apk_original = new FileInputStream(new File(config.apkPath));
+            apk_injected = new FileOutputStream(new File(config.mergedApkPath));
         } catch (final FileNotFoundException e) {
             Log.e(TAG, "", e);
         }
@@ -143,7 +141,6 @@ public class Dexterous {
             int classes_dex_counter = 1;
 
             while ((apkContent = zipInput.getNextEntry()) != null) {
-                ArtistThread.checkThreadCancellation();
 //                Log.d(TAG, "> zipInput: " + apkContent.getName());
                 if (apkContent.getName().contains(".dex") && classes_dex_counter == 1) {
                     for (final Dex classesDex : this.dexBuffers.values()) {
@@ -152,7 +149,7 @@ public class Dexterous {
                         if (classes_dex_counter == 1) {
                             classes_dex_name = "classes.dex";
                         } else {
-                            classes_dex_name = String.format("classes%d.dex", classes_dex_counter);
+                            classes_dex_name = String.format(Locale.getDefault(), "classes%d.dex", classes_dex_counter);
                         }
                         Log.i(TAG, "> APK - Writing: " + classes_dex_name);
 
@@ -178,7 +175,7 @@ public class Dexterous {
                         final String fileExtension = ("." + FilenameUtils.getExtension(fileName));
                         final ZipEntry zipEntry = new ZipEntry(fileName);
                         if (Config.NO_COMPRESS_EXTENSIONS.contains(fileExtension)) {
-                            Log.d(TAG, String.format( "> No Compression: %s " +
+                            Log.d(TAG, String.format(Locale.getDefault(), "> No Compression: %s " +
                                     "[Method: %d] Size: %d Compressed: %d",
                                     fileName,
                                     apkContent.getMethod(),
@@ -199,7 +196,7 @@ public class Dexterous {
                     }
                 }
             }
-            return config.app_apk_merged_file_path;
+            return config.mergedApkPath;
         } catch (final IOException e) {
             Log.e(TAG, "", e);
             return "";

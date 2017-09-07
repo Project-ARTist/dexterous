@@ -19,18 +19,11 @@
  * @author "Sebastian Weisgerber <weisgerber@cispa.saarland>"
  *
  */
-package saarland.cispa.artist.settings;
+package saarland.cispa.utils;
 
-public class ArtistRunStats {
-
-    public long oatFileSizeOriginal = 0;
-    public long oatFileSizeRecompiled = 0;
-
-    @Override
-    public String toString() {
-        return "ArtistRunStats {" + "\n" +
-               "  oatFileSizeOriginal  =" + oatFileSizeOriginal + "\n" +
-               ", oatFileSizeRecompiled=" + oatFileSizeRecompiled + "\n" +
-               '}';
-    }
+/* We need to have the TAG field in a dedicated class that does not use Andoroid APIs
+   since it is used in the java standalone tool as well as in the Android library.
+*/
+public class LogUtils {
+    public static final String TAG = "Dexterous";
 }

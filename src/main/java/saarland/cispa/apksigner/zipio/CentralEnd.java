@@ -19,11 +19,12 @@ package saarland.cispa.apksigner.zipio;
 
 import java.io.IOException;
 
-import saarland.cispa.artist.log.LogG;
+import saarland.cispa.utils.LogA;
+import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
 public class CentralEnd {
-    private static final String TAG = LogG.TAG;
+    private static final String TAG = LogUtils.TAG;
 
     public int signature = 0x06054b50; // end of central dir signature    4 bytes
     public short numberThisDisk = 0;   // number of this disk             2 bytes     
