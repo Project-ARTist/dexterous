@@ -79,8 +79,10 @@ public class Dexterously {
         this.dexSourceFiles = new HashSet<>();
 
         this.runConfig = dexterousRunConfig;
-        this.CODE_LIB_NAME = dexterousRunConfig.codelib.getName();
-        this.CODE_LIB_DEX_NAME = this.CODE_LIB_NAME + ":classes.dex";
+        if (dexterousRunConfig.codelib != null) {
+            this.CODE_LIB_NAME = dexterousRunConfig.codelib.getName();
+            this.CODE_LIB_DEX_NAME = this.CODE_LIB_NAME + ":classes.dex";
+        }
 
         this.javaSourceFiles = new LinkedHashMap<>();
         // Methods
@@ -130,29 +132,29 @@ public class Dexterously {
 
                     logClassDefsWithData(dexFile, DEX_NAME);
 
-//                    Log.i(TAG, "");
-//
-//                    logTypeDefs(dexFile, DEX_NAME);
-//
-//                    analyzeMethodIds(dexFile, DEX_NAME);
-//
-//                    Log.i(TAG, "");
-//
-//                    analyzeProtoIds(dexFile);
-//
-//                    Log.i(TAG, "");
-//
-//                    analyzeClassDefs(dexFile, DEX_NAME);
-//
-//                    Log.i(TAG, "");
-//
-//                    // analyzeTypeIds(dexFile);
-//
-//                    logClasses(DEX_NAME);
-//
-//                    logJavaSourceFileNames(DEX_NAME);
-//
-//                    Log.i(TAG, "");
+                    Log.i(TAG, "");
+
+                    logTypeDefs(dexFile, DEX_NAME);
+
+                    analyzeMethodIds(dexFile, DEX_NAME);
+
+                    Log.i(TAG, "");
+
+                    analyzeProtoIds(dexFile);
+
+                    Log.i(TAG, "");
+
+                    analyzeClassDefs(dexFile, DEX_NAME);
+
+                    Log.i(TAG, "");
+
+                    // analyzeTypeIds(dexFile);
+
+                    logClasses(DEX_NAME);
+
+                    logJavaSourceFileNames(DEX_NAME);
+
+                    Log.i(TAG, "");
                 }
         );
 

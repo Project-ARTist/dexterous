@@ -38,7 +38,9 @@ public class Main {
         Dexterously dexterously = new Dexterously(runConfig);
 
         // Analyzer Test
-        dexterously.analyze();
+        if (runConfig.analyze_apk) {
+            dexterously.analyze();
+        }
 
         dexterously.summary();
 
@@ -98,6 +100,14 @@ public class Main {
                         .hasArg(false)
                         .build()
         );
+        options.addOption(
+                Option.builder("a")
+                        .argName("flag")
+                        .longOpt("analysze")
+                        .desc("Analyze APK")
+                        .hasArg(false)
+                        .build()
+        );
 
         return options;
     }
@@ -119,10 +129,15 @@ public class Main {
                 runConfig.build_apk = true;
                 runConfig.sign_apk = true;
             }
-            runConfig.codelib = new File(arguments.getOptionValue("codelib"));
-            if (!isValidDexfile(runConfig.codelib)) {
-                throw new ParseException(String.format("CodeLib is invalid: %s",
-                        runConfig.codelib.getAbsolutePath()));
+            if (arguments.hasOption("anaylze")) {
+                runConfig.analyze_apk = true;
+            }
+            if (arguments.hasOption("codelib")) {
+                runConfig.codelib = new File(arguments.getOptionValue("codelib"));
+                if (!isValidDexfile(runConfig.codelib)) {
+                    throw new ParseException(String.format("CodeLib is invalid: %s",
+                            runConfig.codelib.getAbsolutePath()));
+                }
             }
             for (final String argument : arguments.getArgList()) {
                 final File dexFile = new File(argument);
