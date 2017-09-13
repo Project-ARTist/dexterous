@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -289,7 +287,7 @@ public final class AnnotationsDirectoryItem extends OffsettedItem {
     @Override
     protected void writeTo0(DexFile file, AnnotatedOutput out) {
         boolean annotates = out.annotates();
-        int classOff = OffsettedItem.getAbsoluteOffsetOr0(classAnnotations);
+        int classOff = getAbsoluteOffsetOr0(classAnnotations);
         int fieldsSize = listSize(fieldAnnotations);
         int methodsSize = listSize(methodAnnotations);
         int parametersSize = listSize(parameterAnnotations);

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +31,7 @@ import comm.android.dx.cf.attrib.AttRuntimeInvisibleParameterAnnotations;
 import comm.android.dx.cf.attrib.AttRuntimeVisibleAnnotations;
 import comm.android.dx.cf.attrib.AttRuntimeVisibleParameterAnnotations;
 import comm.android.dx.cf.attrib.AttSignature;
+import comm.android.dx.cf.attrib.AttSourceDebugExtension;
 import comm.android.dx.cf.attrib.AttSourceFile;
 import comm.android.dx.cf.attrib.AttSynthetic;
 import comm.android.dx.cf.attrib.InnerClassList;
@@ -57,6 +56,23 @@ import comm.android.dx.rop.cst.TypedConstant;
 import comm.android.dx.rop.type.TypeList;
 import comm.android.dx.util.ByteArray;
 import comm.android.dx.util.Hex;
+import comm.android.dx.cf.attrib.*;
+import comm.android.dx.cf.code.ByteCatchList;
+import comm.android.dx.cf.code.LineNumberList;
+import comm.android.dx.cf.code.LocalVariableList;
+import comm.android.dx.cf.iface.Attribute;
+import comm.android.dx.cf.iface.ParseException;
+import comm.android.dx.cf.iface.ParseObserver;
+import comm.android.dx.cf.iface.StdAttributeList;
+import comm.android.dx.rop.annotation.AnnotationVisibility;
+import comm.android.dx.rop.annotation.Annotations;
+import comm.android.dx.rop.annotation.AnnotationsList;
+import comm.android.dx.rop.code.AccessFlags;
+import comm.android.dx.rop.cst.*;
+import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.util.ByteArray;
+import comm.android.dx.util.Hex;
+
 import java.io.IOException;
 
 /**
@@ -79,7 +95,7 @@ public class StdAttributeFactory
     /** {@inheritDoc} */
     @Override
     protected Attribute parse0(DirectClassFile cf, int context, String name,
-            int offset, int length, ParseObserver observer) {
+                               int offset, int length, ParseObserver observer) {
         switch (context) {
             case CTX_CLASS: {
                 if (name == AttDeprecated.ATTRIBUTE_NAME) {
@@ -104,6 +120,9 @@ public class StdAttributeFactory
                 }
                 if (name == AttSignature.ATTRIBUTE_NAME) {
                     return signature(cf, offset, length, observer);
+                }
+                if (name == AttSourceDebugExtension.ATTRIBUTE_NAME) {
+                    return sourceDebugExtension(cf, offset, length, observer);
                 }
                 if (name == AttSourceFile.ATTRIBUTE_NAME) {
                     return sourceFile(cf, offset, length, observer);
@@ -688,6 +707,23 @@ public class StdAttributeFactory
 
         if (observer != null) {
             observer.parsed(bytes, offset, 2, "signature: " + cst);
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses a {@code SourceDebugExtesion} attribute.
+     */
+    private Attribute sourceDebugExtension(DirectClassFile cf, int offset, int length,
+                                           ParseObserver observer) {
+        ByteArray bytes = cf.getBytes().slice(offset, offset + length);
+        CstString smapString = new CstString(bytes);
+        Attribute result = new AttSourceDebugExtension(smapString);
+
+        if (observer != null) {
+            String decoded = smapString.getString();
+            observer.parsed(bytes, offset, length, "sourceDebugExtension: " + decoded);
         }
 
         return result;

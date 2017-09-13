@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +26,13 @@ import comm.android.dx.rop.cst.CstLiteralBits;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.util.AnnotatedOutput;
 import comm.android.dx.util.Hex;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.rop.code.RegisterSpecList;
+import comm.android.dx.rop.cst.CstInteger;
+import comm.android.dx.rop.cst.CstKnownNull;
+import comm.android.dx.rop.cst.CstLiteral64;
+import comm.android.dx.util.Hex;
+
 import java.util.BitSet;
 
 /**
@@ -42,7 +47,7 @@ public abstract class InsnFormat {
      * temporary measure until VM support for the salient opcodes is
      * added. TODO: Remove this declaration when the VM can deal.
      */
-    public static boolean ALLOW_EXTENDED_OPCODES = true;
+    public static final boolean ALLOW_EXTENDED_OPCODES = true;
 
     /**
      * Returns the string form, suitable for inclusion in a listing
@@ -324,49 +329,6 @@ public abstract class InsnFormat {
         int offset = ti.getTargetOffset();
 
         return (offset == (short) offset) ? Hex.s2(offset) : Hex.s4(offset);
-    }
-
-    /**
-     * Helper method to return the constant string for a {@link CstInsn}
-     * in human form.
-     *
-     * @param insn {@code non-null;} a constant-bearing instruction
-     * @return {@code non-null;} the human string form of the contained
-     * constant
-     */
-    protected static String cstString(DalvInsn insn) {
-        CstInsn ci = (CstInsn) insn;
-        Constant cst = ci.getConstant();
-
-        return cst instanceof CstString ? ((CstString) cst).toQuoted() : cst.toHuman();
-    }
-
-    /**
-     * Helper method to return an instruction comment for a constant.
-     *
-     * @param insn {@code non-null;} a constant-bearing instruction
-     * @return {@code non-null;} comment string representing the constant
-     */
-    protected static String cstComment(DalvInsn insn) {
-        CstInsn ci = (CstInsn) insn;
-
-        if (! ci.hasIndex()) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder(20);
-        int index = ci.getIndex();
-
-        sb.append(ci.getConstant().typeName());
-        sb.append('@');
-
-        if (index < 65536) {
-            sb.append(Hex.u2(index));
-        } else {
-            sb.append(Hex.u4(index));
-        }
-
-        return sb.toString();
     }
 
     /**

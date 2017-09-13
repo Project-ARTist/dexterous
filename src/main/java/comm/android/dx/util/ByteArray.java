@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -252,7 +250,7 @@ public final class ByteArray {
     /**
      * Gets a {@code DataInputStream} that reads from this instance,
      * with the cursor starting at the beginning of this instance's data.
-     * <b>Note:</b> The returned instance may be cast to {@link #GetCursor}
+     * <b>Note:</b> The returned instance may be cast to {@link GetCursor}
      * if needed.
      *
      * @return {@code non-null;} an appropriately-constructed
@@ -265,7 +263,7 @@ public final class ByteArray {
     /**
      * Gets a {@code InputStream} that reads from this instance,
      * with the cursor starting at the beginning of this instance's data.
-     * <b>Note:</b> The returned instance may be cast to {@link #GetCursor}
+     * <b>Note:</b> The returned instance may be cast to {@link GetCursor}
      * if needed.
      *
      * @return {@code non-null;} an appropriately-constructed
@@ -347,11 +345,11 @@ public final class ByteArray {
 
     /**
      * Helper class for {@link #makeDataInputStream}. This is used
-     * simply so that the cursor of a wrapped {@link #MyInputStream}
+     * simply so that the cursor of a wrapped {@link MyInputStream}
      * instance may be easily determined.
      */
     public static class MyDataInputStream extends DataInputStream {
-        /** {@code non-null;} the underlying {@link #MyInputStream} */
+        /** {@code non-null;} the underlying {@link MyInputStream} */
         private final MyInputStream wrapped;
 
         public MyDataInputStream(MyInputStream wrapped) {

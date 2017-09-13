@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +31,19 @@ import comm.android.dx.ssa.SsaMethod;
 import comm.android.dx.util.ByteArray;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IntList;
+import comm.android.dx.cf.code.Ropper;
+import comm.android.dx.cf.iface.Member;
+import comm.android.dx.cf.iface.Method;
+import comm.android.dx.rop.code.AccessFlags;
+import comm.android.dx.rop.code.TranslationAdvice;
+import comm.android.dx.ssa.Optimizer;
+import comm.android.dx.ssa.SsaBasicBlock;
+import comm.android.dx.ssa.SsaInsn;
+import comm.android.dx.ssa.SsaMethod;
+import comm.android.dx.util.ByteArray;
+import comm.android.dx.util.Hex;
+import comm.android.dx.util.IntList;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -75,7 +86,7 @@ public class SsaDumper extends BlockDumper {
     /** {@inheritDoc} */
     @Override
     public void endParsingMember(ByteArray bytes, int offset, String name,
-            String descriptor, Member member) {
+                                 String descriptor, Member member) {
         if (!(member instanceof Method)) {
             return;
         }
@@ -92,7 +103,7 @@ public class SsaDumper extends BlockDumper {
         ConcreteMethod meth =
             new ConcreteMethod((Method) member, classFile, true, true);
         TranslationAdvice advice = DexTranslationAdvice.THE_ONE;
-        RopMethod rmeth = Ropper.convert(meth, advice, classFile.getMethods());
+        RopMethod rmeth = Ropper.convert(meth, advice, classFile.getMethods(), dexOptions);
         SsaMethod ssaMeth = null;
         boolean isStatic = AccessFlags.isStatic(meth.getAccessFlags());
         int paramWidth = computeParamWidth(meth, isStatic);

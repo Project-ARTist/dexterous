@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +17,7 @@
 package comm.android.dx.cf.code;
 
 import comm.android.dx.cf.iface.MethodList;
+import comm.android.dx.dex.DexOptions;
 import comm.android.dx.rop.code.AccessFlags;
 import comm.android.dx.rop.code.BasicBlock;
 import comm.android.dx.rop.code.BasicBlockList;
@@ -44,6 +43,10 @@ import comm.android.dx.rop.type.TypeList;
 import comm.android.dx.util.Bits;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IntList;
+import comm.android.dx.rop.code.*;
+import comm.android.dx.rop.type.StdTypeList;
+import comm.android.dx.util.Bits;
+import comm.android.dx.util.Hex;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -345,9 +348,9 @@ public final class Ropper {
      * @return {@code non-null;} the converted instance
      */
     public static RopMethod convert(ConcreteMethod method,
-            TranslationAdvice advice, MethodList methods) {
+            TranslationAdvice advice, MethodList methods, DexOptions dexOptions) {
         try {
-            Ropper r = new Ropper(method, advice, methods);
+            Ropper r = new Ropper(method, advice, methods, dexOptions);
             r.doit();
             return r.getRopMethod();
         } catch (SimException ex) {
@@ -365,8 +368,10 @@ public final class Ropper {
      * @param advice {@code non-null;} translation advice to use
      * @param methods {@code non-null;} list of methods defined by the class
      *     that defines {@code method}.
+     * @param dexOptions {@code non-null;} options for dex output
      */
-    private Ropper(ConcreteMethod method, TranslationAdvice advice, MethodList methods) {
+    private Ropper(ConcreteMethod method, TranslationAdvice advice, MethodList methods,
+            DexOptions dexOptions) {
         if (method == null) {
             throw new NullPointerException("method == null");
         }
@@ -380,7 +385,7 @@ public final class Ropper {
         this.maxLabel = blocks.getMaxLabel();
         this.maxLocals = method.getMaxLocals();
         this.machine = new RopperMachine(this, method, advice, methods);
-        this.sim = new Simulator(machine, method);
+        this.sim = new Simulator(machine, method, dexOptions);
         this.startFrames = new Frame[maxLabel];
         this.subroutines = new Subroutine[maxLabel];
 

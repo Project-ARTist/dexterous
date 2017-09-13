@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +22,8 @@ import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.util.FixedSizeList;
+import comm.android.dx.rop.code.RegisterSpec;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;

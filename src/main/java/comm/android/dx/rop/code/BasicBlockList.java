@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +21,9 @@ import comm.android.dx.rop.type.TypeList;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IntList;
 import comm.android.dx.util.LabeledList;
+import comm.android.dx.rop.type.StdTypeList;
+import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.util.Hex;
 
 /**
  * List of {@link BasicBlock} instances.
@@ -152,7 +153,7 @@ public final class BasicBlockList extends LabeledList {
     /**
      * Gets the first block in the list with the given label, if any.
      *
-     * @param label {@code >= 0;} the label to look for
+     * @param label {@code label >= 0;} the label to look for
      * @return {@code non-null;} the so-labelled block
      * @throws IllegalArgumentException thrown if the label isn't found
      */
@@ -359,6 +360,11 @@ public final class BasicBlockList extends LabeledList {
 
         /** {@inheritDoc} */
         public void visitFillArrayDataInsn(FillArrayDataInsn insn) {
+            visit(insn);
+        }
+
+        /** {@inheritDoc} */
+        public void visitInvokePolymorphicInsn(InvokePolymorphicInsn insn) {
             visit(insn);
         }
 

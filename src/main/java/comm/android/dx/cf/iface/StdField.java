@@ -20,6 +20,8 @@ import comm.android.dx.cf.attrib.AttConstantValue;
 import comm.android.dx.rop.cst.CstNat;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.cst.TypedConstant;
+import comm.android.dx.cf.attrib.AttConstantValue;
+import comm.android.dx.rop.cst.CstNat;
 
 /**
  * Standard implementation of {@link Field}, which directly stores

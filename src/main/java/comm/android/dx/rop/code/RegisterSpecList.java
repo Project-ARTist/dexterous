@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -419,10 +417,12 @@ public final class RegisterSpecList
           if (!duplicateFirst) {
             base += expandedReg.getCategory();
           }
-          duplicateFirst = false;
         } else {
           expandedReg = registerToExpand;
         }
+
+        // Reset duplicateFirst when the first register has been dealt with.
+        duplicateFirst = false;
 
         result.set0(regIdx, expandedReg);
       }

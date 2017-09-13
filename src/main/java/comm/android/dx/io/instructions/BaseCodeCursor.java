@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,18 +34,18 @@ public abstract class BaseCodeCursor implements CodeCursor {
         this.cursor = 0;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public final int cursor() {
         return cursor;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public final int baseAddressForCursor() {
         int mapped = baseAddressMap.get(cursor);
         return (mapped >= 0) ? mapped : cursor;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public final void setBaseAddress(int targetAddress, int baseAddress) {
         baseAddressMap.put(targetAddress, baseAddress);
     }

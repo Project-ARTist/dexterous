@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +16,7 @@
 
 package comm.android.dx.rop.code;
 
+import comm.android.dx.util.Hex;
 import comm.android.dx.util.Hex;
 
 /**
@@ -299,6 +298,14 @@ public final class RegOps {
     public static final int FILL_ARRAY_DATA = 57;
 
     /**
+     * {@code Tr, T0, T1...: any types; r: Tr; x: java.lang.invoke.MethodHandle;
+     * m: signature polymorphic method
+     * spec; y0: T0; y1: T1 ... :: r = x.m(y0, y1, ...)} (call signature
+     * polymorphic method)
+     */
+    public static final int INVOKE_POLYMORPHIC = 58;
+
+    /**
      * This class is uninstantiable.
      */
     private RegOps() {
@@ -369,6 +376,7 @@ public final class RegOps {
             case MOVE_RESULT: return "move-result";
             case MOVE_RESULT_PSEUDO: return "move-result-pseudo";
             case FILL_ARRAY_DATA: return "fill-array-data";
+            case INVOKE_POLYMORPHIC: return "invoke-polymorphic";
         }
 
         return "unknown-" + Hex.u1(opcode);

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,7 +31,7 @@ public interface CodeCursor {
     /**
      * Gets the base address associated with the current cursor. This
      * differs from the cursor value when explicitly set (by {@link
-     * #setBaseAddress). This is used, in particular, to convey base
+     * #setBaseAddress}). This is used, in particular, to convey base
      * addresses to switch data payload instructions, whose relative
      * addresses are relative to the address of a dependant switch
      * instruction.

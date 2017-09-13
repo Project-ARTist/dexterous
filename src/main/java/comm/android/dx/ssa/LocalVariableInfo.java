@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,10 @@ package comm.android.dx.ssa;
 import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.code.RegisterSpecSet;
 import comm.android.dx.util.MutabilityControl;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.rop.type.TypeBearer;
+import comm.android.dx.util.MutabilityControl;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -180,7 +182,7 @@ public class LocalVariableInfo         extends MutabilityControl {
      * the result, it still needs to be passed in explicitly to this
      * method, since the spec that is stored here should always have a
      * simple type and the one in the instruction can be an arbitrary
-     * {@link comm.android.dx.rop.type.TypeBearer} (such as a constant value).
+     * {@link TypeBearer} (such as a constant value).
      *
      * @param insn {@code non-null;} the instruction in question
      * @param spec {@code non-null;} the associated register spec

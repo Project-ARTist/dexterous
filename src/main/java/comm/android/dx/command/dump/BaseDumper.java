@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,10 +19,15 @@ package comm.android.dx.command.dump;
 import comm.android.dx.cf.code.ConcreteMethod;
 import comm.android.dx.cf.iface.Member;
 import comm.android.dx.cf.iface.ParseObserver;
+import comm.android.dx.dex.DexOptions;
 import comm.android.dx.util.ByteArray;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IndentingWriter;
 import comm.android.dx.util.TwoColumnOutput;
+import comm.android.dx.util.ByteArray;
+import comm.android.dx.util.Hex;
+import comm.android.dx.util.IndentingWriter;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
@@ -70,6 +73,9 @@ public abstract class BaseDumper
     /** commandline parsedArgs */
     protected Args args;
 
+    /** {@code non-null;} options for dex output, always set to the defaults for now */
+    protected final DexOptions dexOptions;
+
     /**
      * Constructs an instance.
      *
@@ -91,6 +97,8 @@ public abstract class BaseDumper
         this.separator = rawBytes ? "|" : "";
         this.at = 0;
         this.args = args;
+
+        this.dexOptions = new DexOptions();
 
         int hexCols = (((width - 5) / 15) + 1) & ~1;
         if (hexCols < 6) {

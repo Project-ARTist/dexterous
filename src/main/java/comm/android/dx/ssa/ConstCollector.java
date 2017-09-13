@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +31,12 @@ import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.TypedConstant;
 import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.TypeBearer;
+import comm.android.dx.rop.code.*;
+import comm.android.dx.rop.cst.Constant;
+import comm.android.dx.rop.cst.CstString;
+import comm.android.dx.rop.type.StdTypeList;
+import comm.android.dx.rop.type.TypeBearer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,13 +60,13 @@ public class ConstCollector {
      * to return false for const-string insns whose exceptions are not
      * caught in the current method.
      */
-    private static boolean COLLECT_STRINGS = false;
+    private static final boolean COLLECT_STRINGS = false;
 
     /**
      * If true, allow one local var to be involved with a collected const.
      * Turned off because it mostly just inserts more moves.
      */
-    private static boolean COLLECT_ONE_LOCAL = false;
+    private static final boolean COLLECT_ONE_LOCAL = false;
 
     /** method we're processing */
     private final SsaMethod ssaMeth;

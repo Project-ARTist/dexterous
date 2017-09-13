@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +18,7 @@ package comm.android.dx.merge;
 
 import comm.android.dex.ClassDef;
 import comm.android.dex.Dex;
+import comm.android.dex.DexException;
 import java.util.Comparator;
 
 /**
@@ -81,6 +80,10 @@ final class SortableType {
         int max;
         if (classDef.getSupertypeIndex() == ClassDef.NO_INDEX) {
             max = 0; // this is Object.class or an interface
+        } else if (classDef.getSupertypeIndex() == classDef.getTypeIndex()) {
+            // This is an invalid class extending itself.
+            throw new DexException("Class with type index " + classDef.getTypeIndex()
+                    + " extends itself");
         } else {
             SortableType sortableSupertype = types[classDef.getSupertypeIndex()];
             if (sortableSupertype == null) {

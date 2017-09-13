@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,7 +43,7 @@ package comm.android.dx.ssa;
  * <li> A {@link SsaMethod} instance represents a method.
  * <li> A {@link SsaBasicBlock} instance represents a basic block, whose
  * semantics are quite similar to basic blocks in
- * {@link comm.android.dx.rop Rop form}.
+ * {@link com.android.dx.rop Rop form}.
  * <li> {@link PhiInsn} instances represent "phi" operators defined in SSA
  * literature. They must be the first N instructions in a basic block.
  * <li> {@link NormalSsaInsn} instances represent instructions that directly

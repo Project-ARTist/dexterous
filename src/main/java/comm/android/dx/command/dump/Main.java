@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,10 @@ package comm.android.dx.command.dump;
 import comm.android.dex.util.FileUtils;
 import comm.android.dx.cf.iface.ParseException;
 import comm.android.dx.util.HexParser;
+import comm.android.dex.util.FileUtils;
+import comm.android.dx.cf.iface.ParseException;
+import comm.android.dx.util.HexParser;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -28,7 +30,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class Main {
 
-    static Args parsedArgs = new Args();
+    private Args parsedArgs = new Args();
 
     /**
      * This class is uninstantiable.
@@ -37,10 +39,14 @@ public class Main {
         // This space intentionally left blank.
     }
 
+    public static void main(String[] args) {
+        new Main().run(args);
+    }
+
     /**
      * Run!
      */
-    public static void main(String[] args) {
+    private void run(String[] args) {
         int at = 0;
 
         for (/*at*/; at < args.length; at++) {
@@ -114,7 +120,7 @@ public class Main {
      * @param name {@code non-null;} name of the file
      * @param bytes {@code non-null;} contents of the file
      */
-    private static void processOne(String name, byte[] bytes) {
+    private void processOne(String name, byte[] bytes) {
         if (parsedArgs.dotDump) {
             DotDumper.dump(bytes, name, parsedArgs);
         } else if (parsedArgs.basicBlocks) {

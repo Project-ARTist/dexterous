@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +29,11 @@ import comm.android.dx.rop.cst.CstMethodRef;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Type;
+import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.rop.annotation.Annotation;
+import comm.android.dx.rop.annotation.AnnotationVisibility;
+import comm.android.dx.rop.annotation.NameValuePair;
+import comm.android.dx.rop.cst.*;
 import comm.android.dx.rop.type.TypeList;
 
 import java.util.ArrayList;
@@ -64,6 +67,10 @@ public final class AnnotationUtils {
     private static final CstType SIGNATURE_TYPE =
         CstType.intern(Type.intern("Ldalvik/annotation/Signature;"));
 
+        /** {@code non-null;} type for {@code SourceDebugExtension} annotations */
+    private static final CstType SOURCE_DEBUG_EXTENSION_TYPE =
+        CstType.intern(Type.intern("Ldalvik/annotation/SourceDebugExtension;"));
+
     /** {@code non-null;} type for {@code Throws} annotations */
     private static final CstType THROWS_TYPE =
         CstType.intern(Type.intern("Ldalvik/annotation/Throws;"));
@@ -91,7 +98,7 @@ public final class AnnotationUtils {
      * @return {@code non-null;} the constructed annotation
      */
     public static Annotation makeAnnotationDefault(Annotation defaults) {
-        Annotation result = new Annotation(ANNOTATION_DEFAULT_TYPE, SYSTEM);
+        Annotation result = new Annotation(ANNOTATION_DEFAULT_TYPE, AnnotationVisibility.SYSTEM);
 
         result.put(new NameValuePair(VALUE_STRING, new CstAnnotation(defaults)));
         result.setImmutable();
@@ -105,7 +112,7 @@ public final class AnnotationUtils {
      * @return {@code non-null;} the annotation
      */
     public static Annotation makeEnclosingClass(CstType clazz) {
-        Annotation result = new Annotation(ENCLOSING_CLASS_TYPE, SYSTEM);
+        Annotation result = new Annotation(ENCLOSING_CLASS_TYPE, AnnotationVisibility.SYSTEM);
 
         result.put(new NameValuePair(VALUE_STRING, clazz));
         result.setImmutable();
@@ -119,7 +126,7 @@ public final class AnnotationUtils {
      * @return {@code non-null;} the annotation
      */
     public static Annotation makeEnclosingMethod(CstMethodRef method) {
-        Annotation result = new Annotation(ENCLOSING_METHOD_TYPE, SYSTEM);
+        Annotation result = new Annotation(ENCLOSING_METHOD_TYPE, AnnotationVisibility.SYSTEM);
 
         result.put(new NameValuePair(VALUE_STRING, method));
         result.setImmutable();
@@ -135,7 +142,7 @@ public final class AnnotationUtils {
      * @return {@code non-null;} the annotation
      */
     public static Annotation makeInnerClass(CstString name, int accessFlags) {
-        Annotation result = new Annotation(INNER_CLASS_TYPE, SYSTEM);
+        Annotation result = new Annotation(INNER_CLASS_TYPE, AnnotationVisibility.SYSTEM);
         Constant nameCst = (name != null) ? name : CstKnownNull.THE_ONE;
 
         result.put(new NameValuePair(NAME_STRING, nameCst));
@@ -153,7 +160,7 @@ public final class AnnotationUtils {
      */
     public static Annotation makeMemberClasses(TypeList types) {
         CstArray array = makeCstArray(types);
-        Annotation result = new Annotation(MEMBER_CLASSES_TYPE, SYSTEM);
+        Annotation result = new Annotation(MEMBER_CLASSES_TYPE, AnnotationVisibility.SYSTEM);
         result.put(new NameValuePair(VALUE_STRING, array));
         result.setImmutable();
         return result;
@@ -166,7 +173,7 @@ public final class AnnotationUtils {
      * @return {@code non-null;} the annotation
      */
     public static Annotation makeSignature(CstString signature) {
-        Annotation result = new Annotation(SIGNATURE_TYPE, SYSTEM);
+        Annotation result = new Annotation(SIGNATURE_TYPE, AnnotationVisibility.SYSTEM);
 
         /*
          * Split the string into pieces that are likely to be common
@@ -222,6 +229,20 @@ public final class AnnotationUtils {
     }
 
     /**
+     * Constructs a standard {@code SourceDebugExtension} annotation.
+     *
+     * @param smapString {@code non-null;} the SMAP string associated with
+     * @return {@code non-null;} the annotation
+     */
+    public static Annotation makeSourceDebugExtension(CstString smapString) {
+        Annotation result = new Annotation(SOURCE_DEBUG_EXTENSION_TYPE, AnnotationVisibility.SYSTEM);
+
+        result.put(new NameValuePair(VALUE_STRING, smapString));
+        result.setImmutable();
+        return result;
+    }
+
+    /**
      * Constructs a standard {@code Throws} annotation.
      *
      * @param types {@code non-null;} the list of thrown types
@@ -229,7 +250,7 @@ public final class AnnotationUtils {
      */
     public static Annotation makeThrows(TypeList types) {
         CstArray array = makeCstArray(types);
-        Annotation result = new Annotation(THROWS_TYPE, SYSTEM);
+        Annotation result = new Annotation(THROWS_TYPE, AnnotationVisibility.SYSTEM);
         result.put(new NameValuePair(VALUE_STRING, array));
         result.setImmutable();
         return result;

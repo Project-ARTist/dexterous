@@ -17,6 +17,7 @@
 package comm.android.dx.cf.iface;
 
 import comm.android.dx.util.ByteArray;
+import comm.android.dx.util.ByteArray;
 
 /**
  * Observer of parsing in action. This is used to supply feedback from

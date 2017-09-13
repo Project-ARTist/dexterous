@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +16,7 @@
 
 package comm.android.dx.rop.code;
 
+import comm.android.dx.command.dexer.Main;
 import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.type.Type;
@@ -239,6 +238,7 @@ public final class RegisterSpec
      * @param other {@code non-null;} spec to compare to
      * @return {@code -1..1;} standard result of comparison
      */
+    @Override
     public int compareTo(RegisterSpec other) {
         if (this.reg < other.reg) {
             return -1;
@@ -290,31 +290,37 @@ public final class RegisterSpec
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toHuman() {
         return toString0(true);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Type getType() {
         return type.getType();
     }
 
     /** {@inheritDoc} */
+    @Override
     public TypeBearer getFrameType() {
         return type.getFrameType();
     }
 
     /** {@inheritDoc} */
+    @Override
     public final int getBasicType() {
         return type.getBasicType();
     }
 
     /** {@inheritDoc} */
+    @Override
     public final int getBasicFrameType() {
         return type.getBasicFrameType();
     }
 
     /** {@inheritDoc} */
+    @Override
     public final boolean isConstant() {
         return false;
     }
@@ -598,6 +604,10 @@ public final class RegisterSpec
         }
 
         return sb.toString();
+    }
+
+    public static void clearInternTable() {
+        theInterns.clear();
     }
 
     /**

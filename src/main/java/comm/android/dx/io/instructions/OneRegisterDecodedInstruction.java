@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +17,7 @@
 package comm.android.dx.io.instructions;
 
 import comm.android.dx.io.IndexType;
+import comm.android.dx.io.IndexType;
 
 /**
  * A decoded Dalvik instruction which has one register argument.
@@ -31,24 +30,24 @@ public final class OneRegisterDecodedInstruction extends DecodedInstruction {
      * Constructs an instance.
      */
     public OneRegisterDecodedInstruction(InstructionCodec format, int opcode,
-            int index, IndexType indexType, int target, long literal,
-            int a) {
+                                         int index, IndexType indexType, int target, long literal,
+                                         int a) {
         super(format, opcode, index, indexType, target, literal);
 
         this.a = a;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public int getRegisterCount() {
         return 1;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public int getA() {
         return a;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public DecodedInstruction withIndex(int newIndex) {
         return new OneRegisterDecodedInstruction(
                 getFormat(), getOpcode(), newIndex, getIndexType(),

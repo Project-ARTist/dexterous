@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +20,8 @@ import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.util.MutabilityControl;
 import comm.android.dx.util.ToHuman;
+import comm.android.dx.util.MutabilityControl;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;

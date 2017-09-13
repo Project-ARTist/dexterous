@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +21,9 @@ import comm.android.dx.io.IndexType;
 import comm.android.dx.io.OpcodeInfo;
 import comm.android.dx.io.Opcodes;
 import comm.android.dx.util.Hex;
+import comm.android.dx.io.OpcodeInfo;
+import comm.android.dx.util.Hex;
+
 import java.io.EOFException;
 
 /**
@@ -603,6 +604,28 @@ public enum InstructionCodec {
                     unit1(literal),
                     unit2(literal),
                     unit3(literal));
+        }
+    },
+
+    FORMAT_45CC() {
+        @Override public DecodedInstruction decode(int opcodeUnit,
+                CodeInput in) throws EOFException {
+            return decodeRegisterList(this, opcodeUnit, in);
+        }
+
+        @Override public void encode(DecodedInstruction insn, CodeOutput out) {
+            encodeRegisterList(insn, out);
+        }
+    },
+
+    FORMAT_4RCC() {
+        @Override public DecodedInstruction decode(int opcodeUnit,
+                CodeInput in) throws EOFException {
+            return decodeRegisterList(this, opcodeUnit, in);
+        }
+
+        @Override public void encode(DecodedInstruction insn, CodeOutput out) {
+            encodeRegisterList(insn, out);
         }
     },
 

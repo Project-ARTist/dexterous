@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +42,16 @@ import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.type.Prototype;
 import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.Type;
+import comm.android.dex.Leb128;
+import comm.android.dex.util.ByteArrayByteInput;
+import comm.android.dx.dex.code.DalvCode;
+import comm.android.dx.dex.code.DalvInsnList;
+import comm.android.dx.dex.code.LocalList;
+import comm.android.dx.dex.code.PositionList;
+import comm.android.dx.rop.cst.CstMethodRef;
+import comm.android.dx.rop.cst.CstString;
+import comm.android.dx.rop.type.StdTypeList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +113,7 @@ public class DebugInfoDecoder {
      * @param file dex file this debug info will be stored in
      */
     DebugInfoDecoder(byte[] encoded, int codesize, int regSize,
-            boolean isStatic, CstMethodRef ref, DexFile file) {
+                     boolean isStatic, CstMethodRef ref, DexFile file) {
         if (encoded == null) {
             throw new NullPointerException("encoded == null");
         }
@@ -296,7 +304,7 @@ public class DebugInfoDecoder {
             int opcode = bs.readByte() & 0xff;
 
             switch (opcode) {
-                case DBG_START_LOCAL: {
+                case DebugInfoConstants.DBG_START_LOCAL: {
                     int reg = Leb128.readUnsignedLeb128(bs);
                     int nameIdx = readStringIndex(bs);
                     int typeIdx = readStringIndex(bs);
@@ -308,7 +316,7 @@ public class DebugInfoDecoder {
                 }
                 break;
 
-                case DBG_START_LOCAL_EXTENDED: {
+                case DebugInfoConstants.DBG_START_LOCAL_EXTENDED: {
                     int reg = Leb128.readUnsignedLeb128(bs);
                     int nameIdx = readStringIndex(bs);
                     int typeIdx = readStringIndex(bs);
@@ -321,7 +329,7 @@ public class DebugInfoDecoder {
                 }
                 break;
 
-                case DBG_RESTART_LOCAL: {
+                case DebugInfoConstants.DBG_RESTART_LOCAL: {
                     int reg = Leb128.readUnsignedLeb128(bs);
                     LocalEntry prevle;
                     LocalEntry le;
@@ -347,7 +355,7 @@ public class DebugInfoDecoder {
                 }
                 break;
 
-                case DBG_END_LOCAL: {
+                case DebugInfoConstants.DBG_END_LOCAL: {
                     int reg = Leb128.readUnsignedLeb128(bs);
                     LocalEntry prevle;
                     LocalEntry le;
@@ -373,41 +381,41 @@ public class DebugInfoDecoder {
                 }
                 break;
 
-                case DBG_END_SEQUENCE:
+                case DebugInfoConstants.DBG_END_SEQUENCE:
                     // all done
                 return;
 
-                case DBG_ADVANCE_PC:
+                case DebugInfoConstants.DBG_ADVANCE_PC:
                     address += Leb128.readUnsignedLeb128(bs);
                 break;
 
-                case DBG_ADVANCE_LINE:
+                case DebugInfoConstants.DBG_ADVANCE_LINE:
                     line += Leb128.readSignedLeb128(bs);
                 break;
 
-                case DBG_SET_PROLOGUE_END:
+                case DebugInfoConstants.DBG_SET_PROLOGUE_END:
                     //TODO do something with this.
                 break;
 
-                case DBG_SET_EPILOGUE_BEGIN:
+                case DebugInfoConstants.DBG_SET_EPILOGUE_BEGIN:
                     //TODO do something with this.
                 break;
 
-                case DBG_SET_FILE:
+                case DebugInfoConstants.DBG_SET_FILE:
                     //TODO do something with this.
                 break;
 
                 default:
-                    if (opcode < DBG_FIRST_SPECIAL) {
+                    if (opcode < DebugInfoConstants.DBG_FIRST_SPECIAL) {
                         throw new RuntimeException(
                                 "Invalid extended opcode encountered "
                                         + opcode);
                     }
 
-                    int adjopcode = opcode - DBG_FIRST_SPECIAL;
+                    int adjopcode = opcode - DebugInfoConstants.DBG_FIRST_SPECIAL;
 
-                    address += adjopcode / DBG_LINE_RANGE;
-                    line += DBG_LINE_BASE + (adjopcode % DBG_LINE_RANGE);
+                    address += adjopcode / DebugInfoConstants.DBG_LINE_RANGE;
+                    line += DebugInfoConstants.DBG_LINE_BASE + (adjopcode % DebugInfoConstants.DBG_LINE_RANGE);
 
                     positions.add(new PositionEntry(address, line));
                 break;
@@ -428,7 +436,7 @@ public class DebugInfoDecoder {
      * @param isStatic whether the method is static
      */
     public static void validateEncode(byte[] info, DexFile file,
-            CstMethodRef ref, DalvCode code, boolean isStatic) {
+                                      CstMethodRef ref, DalvCode code, boolean isStatic) {
         PositionList pl = code.getPositions();
         LocalList ll = code.getLocals();
         DalvInsnList insns = code.getInsns();

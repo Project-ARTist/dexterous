@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -75,7 +73,7 @@ public final class PositionList extends FixedSizeList {
         SourcePosition noInfo = SourcePosition.NO_INFO;
         SourcePosition cur = noInfo;
         int sz = insns.size();
-        PositionList.Entry[] arr = new PositionList.Entry[sz];
+        Entry[] arr = new Entry[sz];
         boolean lastWasTarget = false;
         int at = 0;
 
@@ -98,7 +96,7 @@ public final class PositionList extends FixedSizeList {
             }
 
             cur = pos;
-            arr[at] = new PositionList.Entry(insn.getAddress(), pos);
+            arr[at] = new Entry(insn.getAddress(), pos);
             at++;
 
             lastWasTarget = false;

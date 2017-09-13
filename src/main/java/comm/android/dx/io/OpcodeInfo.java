@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +17,7 @@
 package comm.android.dx.io;
 
 import comm.android.dx.io.instructions.InstructionCodec;
+import comm.android.dx.util.Hex;
 import comm.android.dx.util.Hex;
 
 /**
@@ -933,6 +932,22 @@ public final class OpcodeInfo {
         new Info(Opcodes.USHR_INT_LIT8, "ushr-int/lit8",
             InstructionCodec.FORMAT_22B, IndexType.NONE);
 
+    public static final Info INVOKE_POLYMORPHIC =
+        new Info(Opcodes.INVOKE_POLYMORPHIC, "invoke-polymorphic",
+            InstructionCodec.FORMAT_45CC, IndexType.METHOD_AND_PROTO_REF);
+
+    public static final Info INVOKE_POLYMORPHIC_RANGE =
+        new Info(Opcodes.INVOKE_POLYMORPHIC_RANGE, "invoke-polymorphic/range",
+            InstructionCodec.FORMAT_4RCC, IndexType.METHOD_AND_PROTO_REF);
+
+    public static final Info INVOKE_CUSTOM =
+        new Info(Opcodes.INVOKE_CUSTOM, "invoke-custom",
+            InstructionCodec.FORMAT_35C, IndexType.CALL_SITE_REF);
+
+    public static final Info INVOKE_CUSTOM_RANGE =
+        new Info(Opcodes.INVOKE_CUSTOM_RANGE, "invoke-custom/range",
+            InstructionCodec.FORMAT_3RC, IndexType.CALL_SITE_REF);
+
     // END(opcode-info-defs)
 
     // Static initialization.
@@ -1166,6 +1181,10 @@ public final class OpcodeInfo {
         set(SHL_INT_LIT8);
         set(SHR_INT_LIT8);
         set(USHR_INT_LIT8);
+        set(INVOKE_POLYMORPHIC);
+        set(INVOKE_POLYMORPHIC_RANGE);
+        set(INVOKE_CUSTOM);
+        set(INVOKE_CUSTOM_RANGE);
         // END(opcode-info-init)
     }
 
@@ -1177,7 +1196,7 @@ public final class OpcodeInfo {
     }
 
     /**
-     * Gets the {@link @Info} for the given opcode value.
+     * Gets the {@link Info} for the given opcode value.
      *
      * @param opcode {@code Opcodes.MIN_VALUE..Opcodes.MAX_VALUE;} the
      * opcode value

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -168,5 +166,25 @@ public final class CstNat extends Constant {
      */
     public final boolean isClassInit() {
         return name.getString().equals("<clinit>");
+    }
+
+    /**
+     * Gets whether this instance has the name of a signature
+     * polymorphic method.
+     *
+     * @return {@code true} iff the name suggest it could be
+     * signature polymorphic method.
+     */
+    public final boolean isSignaturePolymorphic() {
+        final String INVOKE = "invoke";
+        final String INVOKE_EXACT = "invokeExact";
+
+        int nameLength = name.getUtf8Size();
+        if (nameLength == INVOKE.length()) {
+            return name.getString().equals(INVOKE);
+        } else if (nameLength == INVOKE_EXACT.length()) {
+            return name.getString().equals(INVOKE_EXACT);
+        }
+        return false;
     }
 }

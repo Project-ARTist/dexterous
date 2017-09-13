@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,9 +40,12 @@ import comm.android.dx.dex.code.form.Form31t;
 import comm.android.dx.dex.code.form.Form32x;
 import comm.android.dx.dex.code.form.Form35c;
 import comm.android.dx.dex.code.form.Form3rc;
+import comm.android.dx.dex.code.form.Form45cc;
+import comm.android.dx.dex.code.form.Form4rcc;
 import comm.android.dx.dex.code.form.Form51l;
 import comm.android.dx.dex.code.form.SpecialFormat;
 import comm.android.dx.io.Opcodes;
+import comm.android.dx.dex.code.form.*;
 
 /**
  * Standard instances of {@link Dop} and utility methods for getting
@@ -937,6 +938,22 @@ public final class Dops {
         new Dop(Opcodes.USHR_INT_LIT8, Opcodes.USHR_INT,
             Opcodes.NO_NEXT, Form22b.THE_ONE, true);
 
+    public static final Dop INVOKE_POLYMORPHIC =
+        new Dop(Opcodes.INVOKE_POLYMORPHIC, Opcodes.INVOKE_POLYMORPHIC,
+            Opcodes.INVOKE_POLYMORPHIC_RANGE, Form45cc.THE_ONE, true);
+
+    public static final Dop INVOKE_POLYMORPHIC_RANGE =
+        new Dop(Opcodes.INVOKE_POLYMORPHIC_RANGE, Opcodes.INVOKE_POLYMORPHIC,
+            Opcodes.NO_NEXT, Form4rcc.THE_ONE, true);
+
+    public static final Dop INVOKE_CUSTOM =
+        new Dop(Opcodes.INVOKE_CUSTOM, Opcodes.INVOKE_CUSTOM,
+            Opcodes.INVOKE_CUSTOM_RANGE, Form35c.THE_ONE, true);
+
+    public static final Dop INVOKE_CUSTOM_RANGE =
+        new Dop(Opcodes.INVOKE_CUSTOM_RANGE, Opcodes.INVOKE_CUSTOM,
+            Opcodes.NO_NEXT, Form3rc.THE_ONE, true);
+
     // END(dops)
 
     // Static initialization.
@@ -1164,6 +1181,10 @@ public final class Dops {
         set(SHL_INT_LIT8);
         set(SHR_INT_LIT8);
         set(USHR_INT_LIT8);
+        set(INVOKE_POLYMORPHIC);
+        set(INVOKE_POLYMORPHIC_RANGE);
+        set(INVOKE_CUSTOM);
+        set(INVOKE_CUSTOM_RANGE);
         // END(dops-init)
     }
 

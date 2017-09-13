@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -55,26 +53,26 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         return result;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(short codeUnit) {
         array[cursor()] = codeUnit;
         advance(1);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(short u0, short u1) {
         write(u0);
         write(u1);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(short u0, short u1, short u2) {
         write(u0);
         write(u1);
         write(u2);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(short u0, short u1, short u2, short u3) {
         write(u0);
         write(u1);
@@ -82,7 +80,7 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write(u3);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(short u0, short u1, short u2, short u3, short u4) {
         write(u0);
         write(u1);
@@ -91,13 +89,13 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write(u4);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void writeInt(int value) {
         write((short) value);
         write((short) (value >> 16));
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void writeLong(long value) {
         write((short) value);
         write((short) (value >> 16));
@@ -105,7 +103,7 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         write((short) (value >> 48));
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(byte[] data) {
         int value = 0;
         boolean even = true;
@@ -125,21 +123,21 @@ public final class ShortArrayCodeOutput extends BaseCodeCursor
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(short[] data) {
         for (short unit : data) {
             write(unit);
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(int[] data) {
         for (int i : data) {
             writeInt(i);
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void write(long[] data) {
         for (long l : data) {
             writeLong(l);

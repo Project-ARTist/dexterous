@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +29,15 @@ import comm.android.dx.rop.cst.CstNat;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Prototype;
+import comm.android.dx.cf.attrib.AttCode;
+import comm.android.dx.cf.attrib.AttLocalVariableTable;
+import comm.android.dx.cf.attrib.AttLocalVariableTypeTable;
+import comm.android.dx.cf.iface.ClassFile;
+import comm.android.dx.cf.iface.Method;
+import comm.android.dx.rop.code.SourcePosition;
+import comm.android.dx.rop.cst.CstNat;
+import comm.android.dx.rop.cst.CstString;
+import comm.android.dx.rop.cst.CstType;
 
 /**
  * Container for all the giblets that make up a concrete Java bytecode method.
@@ -47,12 +54,6 @@ public final class ConcreteMethod implements Method {
      * if any
      */
     private final CstString sourceFile;
-
-    /**
-     * whether the class that this method is part of is defined with
-     * {@code ACC_SUPER}
-     */
-    private final boolean accSuper;
 
     /** {@code non-null;} the code attribute */
     private final AttCode attCode;
@@ -74,13 +75,12 @@ public final class ConcreteMethod implements Method {
      * information (if any)
      */
     public ConcreteMethod(Method method, ClassFile cf, boolean keepLines, boolean keepLocals) {
-        this(method, cf.getAccessFlags(), cf.getSourceFile(), keepLines, keepLocals);
+        this(method, cf.getSourceFile(), keepLines, keepLocals);
     }
 
-    public ConcreteMethod(Method method, int accessFlags, CstString sourceFile,
+    public ConcreteMethod(Method method, CstString sourceFile,
             boolean keepLines, boolean keepLocals) {
         this.method = method;
-        this.accSuper = (accessFlags & AccessFlags.ACC_SUPER) != 0;
         this.sourceFile = sourceFile;
 
         AttributeList attribs = method.getAttributes();
@@ -179,16 +179,6 @@ public final class ConcreteMethod implements Method {
     /** {@inheritDoc} */
     public Prototype getEffectiveDescriptor() {
         return method.getEffectiveDescriptor();
-    }
-
-    /**
-     * Gets whether the class that this method is part of is defined with
-     * {@code ACC_SUPER}.
-     *
-     * @return the {@code ACC_SUPER} value
-     */
-    public boolean getAccSuper() {
-        return accSuper;
     }
 
     /**

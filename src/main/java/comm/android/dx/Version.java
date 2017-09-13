@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,5 +21,5 @@ package comm.android.dx;
  */
 public class Version {
     /** {@code non-null;} version string */
-    public static final String VERSION = "1.12";
+    public static final String VERSION = "1.13";
 }

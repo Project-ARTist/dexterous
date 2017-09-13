@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,8 @@ package comm.android.dx.ssa;
 import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.code.RegisterSpecSet;
 import comm.android.dx.util.IntList;
+import comm.android.dx.rop.code.RegisterSpec;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Code to figure out which local variables are active at which points in
  * a method. Stolen and retrofitted from
- * comm.android.dx.rop.code.LocalVariableExtractor
+ * com.android.dx.rop.code.LocalVariableExtractor
  *
  * TODO remove this. Allow Rop-form LocalVariableInfo to be passed in,
  * converted, and adapted through edge-splitting.

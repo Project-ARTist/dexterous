@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +21,11 @@ import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeBearer;
 import comm.android.dx.util.Hex;
+import comm.android.dex.util.ExceptionWithContext;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.rop.type.TypeBearer;
+import comm.android.dx.util.Hex;
+
 import java.util.ArrayList;
 
 /**
@@ -31,8 +34,8 @@ import java.util.ArrayList;
  * have different locals sets for each caller.
  *
  * <p><b>Note:</b> For the most part, the documentation for this class
- * ignores the distinction between {@link comm.android.dx.rop.type.Type} and {@link
- * comm.android.dx.rop.type.TypeBearer}.</p>
+ * ignores the distinction between {@link Type} and {@link
+ * TypeBearer}.</p>
  */
 public class LocalsArraySet extends LocalsArray {
 
@@ -101,7 +104,7 @@ public class LocalsArraySet extends LocalsArray {
     }
 
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public void setImmutable() {
         primary.setImmutable();
@@ -114,13 +117,13 @@ public class LocalsArraySet extends LocalsArray {
         super.setImmutable();
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public LocalsArray copy() {
         return new LocalsArraySet(this);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public void annotate(ExceptionWithContext ex) {
         ex.addContext("(locals array set; primary)");
@@ -139,7 +142,7 @@ public class LocalsArraySet extends LocalsArray {
         }
     }
 
-    /** {@inheritDoc*/
+    /** {@inheritDoc} */
     public String toHuman() {
         StringBuilder sb = new StringBuilder();
 
@@ -164,7 +167,7 @@ public class LocalsArraySet extends LocalsArray {
         return sb.toString();
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public void makeInitialized(Type type) {
         int len = primary.getMaxLocals();
@@ -185,13 +188,13 @@ public class LocalsArraySet extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public int getMaxLocals() {
         return primary.getMaxLocals();
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public void set(int idx, TypeBearer type) {
         throwIfImmutable();
@@ -205,13 +208,13 @@ public class LocalsArraySet extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public void set(RegisterSpec spec) {
         set(spec.getReg(), spec);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public void invalidate(int idx) {
         throwIfImmutable();
@@ -225,25 +228,25 @@ public class LocalsArraySet extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public TypeBearer getOrNull(int idx) {
         return primary.getOrNull(idx);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public TypeBearer get(int idx) {
         return primary.get(idx);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public TypeBearer getCategory1(int idx) {
         return primary.getCategory1(idx);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public TypeBearer getCategory2(int idx) {
         return primary.getCategory2(idx);
@@ -341,7 +344,7 @@ public class LocalsArraySet extends LocalsArray {
         return new LocalsArraySet(newPrimary, newSecondaries);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public LocalsArraySet merge(LocalsArray other) {
         LocalsArraySet result;

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,6 +40,12 @@ public enum IndexType {
 
     /** field reference index */
     FIELD_REF,
+
+    /** method index and a proto index */
+    METHOD_AND_PROTO_REF,
+
+    /** call site reference index */
+    CALL_SITE_REF,
 
     /** inline method index (for inline linked method invocations) */
     INLINE_METHOD,

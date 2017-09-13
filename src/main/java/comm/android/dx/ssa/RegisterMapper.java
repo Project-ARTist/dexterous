@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,9 @@ package comm.android.dx.ssa;
 import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.code.RegisterSpecList;
 import comm.android.dx.rop.code.RegisterSpecSet;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.rop.code.RegisterSpecList;
+import comm.android.dx.rop.code.RegisterSpecSet;
 
 /**
  * Represents a mapping between two register numbering schemes.
@@ -32,7 +33,7 @@ public abstract class RegisterMapper {
     /**
      * Gets the count of registers (really, the total register width, since
      * category width is counted) in the new namespace.
-     * @return >= 0 width of new namespace.
+     * @return &ge; 0 width of new namespace.
      */
     public abstract int getNewRegisterCount();
 

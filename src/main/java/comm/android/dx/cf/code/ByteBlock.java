@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,7 @@ package comm.android.dx.cf.code;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IntList;
 import comm.android.dx.util.LabeledItem;
+import comm.android.dx.util.Hex;
 
 /**
  * Representation of a basic block in a bytecode array.

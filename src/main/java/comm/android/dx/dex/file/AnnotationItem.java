@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +22,12 @@ import comm.android.dx.rop.annotation.NameValuePair;
 import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.util.AnnotatedOutput;
+import comm.android.dx.util.ByteArrayAnnotatedOutput;
+import comm.android.dx.rop.annotation.Annotation;
+import comm.android.dx.rop.annotation.AnnotationVisibility;
+import comm.android.dx.rop.annotation.NameValuePair;
+import comm.android.dx.rop.cst.Constant;
+import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.util.ByteArrayAnnotatedOutput;
 
 import java.util.Arrays;

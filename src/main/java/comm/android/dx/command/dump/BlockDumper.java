@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +28,7 @@ import comm.android.dx.cf.direct.DirectClassFile;
 import comm.android.dx.cf.direct.StdAttributeFactory;
 import comm.android.dx.cf.iface.Member;
 import comm.android.dx.cf.iface.Method;
+import comm.android.dx.dex.DexOptions;
 import comm.android.dx.rop.code.AccessFlags;
 import comm.android.dx.rop.code.BasicBlock;
 import comm.android.dx.rop.code.BasicBlockList;
@@ -43,6 +42,17 @@ import comm.android.dx.ssa.Optimizer;
 import comm.android.dx.util.ByteArray;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IntList;
+import comm.android.dx.cf.code.*;
+import comm.android.dx.cf.direct.CodeObserver;
+import comm.android.dx.cf.direct.DirectClassFile;
+import comm.android.dx.cf.iface.Member;
+import comm.android.dx.cf.iface.Method;
+import comm.android.dx.rop.code.*;
+import comm.android.dx.rop.cst.CstType;
+import comm.android.dx.util.ByteArray;
+import comm.android.dx.util.Hex;
+import comm.android.dx.util.IntList;
+
 import java.io.PrintStream;
 
 /**
@@ -287,7 +297,7 @@ public class BlockDumper
         TranslationAdvice advice = DexTranslationAdvice.THE_ONE;
         BytecodeArray code = meth.getCode();
         ByteArray bytes = code.getBytes();
-        RopMethod rmeth = Ropper.convert(meth, advice, classFile.getMethods());
+        RopMethod rmeth = Ropper.convert(meth, advice, classFile.getMethods(), dexOptions);
         StringBuffer sb = new StringBuffer(2000);
 
         if (optimize) {

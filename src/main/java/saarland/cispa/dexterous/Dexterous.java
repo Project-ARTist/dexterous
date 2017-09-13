@@ -21,6 +21,7 @@
  */
 package saarland.cispa.dexterous;
 
+import comm.android.dx.command.dexer.DxContext;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedInputStream;
@@ -60,8 +61,10 @@ public class Dexterous {
     private Map<String, Dex> dexBuffers = null;
 
     private Set<String> dexSourceFiles = null;
+    private DxContext context;
 
     public Dexterous(final MergeConfig config) {
+        this.context = new DxContext();
         this.config = config;
         this.CODE_LIB_NAME = config.codelibName;
         this.CODE_LIB_DEX_NAME = this.CODE_LIB_NAME + ":classes.dex";
@@ -212,7 +215,12 @@ public class Dexterous {
         Dex mergedDexContent = null;
         dexFile.setName(dexName);
         try {
-            DexMerger dexMerger = new DexMerger(new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)}, CODE_LIB_DEX_NAME, CollisionPolicy.FAIL);
+            DexMerger dexMerger = new DexMerger(
+                    new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)},
+                    CODE_LIB_DEX_NAME,
+                    CollisionPolicy.FAIL,
+                    this.context
+            );
             mergedDexContent = dexMerger.mergeMethodsOnly();
 
         } catch (final IOException e) {

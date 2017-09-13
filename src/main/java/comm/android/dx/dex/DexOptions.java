@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +18,8 @@ package comm.android.dx.dex;
 
 import comm.android.dex.DexFormat;
 
+import comm.android.dx.dex.code.DalvInsnList;
+import comm.android.dex.DexFormat;
 import comm.android.dx.dex.code.DalvInsnList;
 
 /**
@@ -40,8 +40,8 @@ public class DexOptions {
     */
     public boolean ALIGN_64BIT_REGS_IN_OUTPUT_FINISHER = ALIGN_64BIT_REGS_SUPPORT;
 
-    /** target API level */
-    public int targetApiLevel = DexFormat.API_NO_EXTENDED_OPCODES;
+    /** minimum SDK version targeted */
+    public int minSdkVersion = DexFormat.API_NO_EXTENDED_OPCODES;
 
     /** force generation of jumbo opcodes */
     public boolean forceJumbo = false;
@@ -50,6 +50,30 @@ public class DexOptions {
      * Gets the dex file magic number corresponding to this instance.
      */
     public String getMagic() {
-        return DexFormat.apiToMagic(targetApiLevel);
+        return DexFormat.apiToMagic(minSdkVersion);
+    }
+
+    /**
+     * Returns whether default and static interface methods are allowed.
+     *
+     * This became allowed as of Nougat (SDK version 24).
+     *
+     * @return true if supported on the currently selected SDK.
+     */
+    public boolean canUseDefaultInterfaceMethods() {
+        return minSdkVersion >= DexFormat.API_DEFAULT_INTERFACE_METHODS;
+    }
+
+    /**
+     * Returns whether invoke-polymorphic can be used. This is emitted for calls
+     * to {@code java.lang.invoke.MethodHandle.invoke()} and
+     * {@code java.lang.invoke.MethodHandle.invokeExact()}.
+     *
+     * This became allowed as of the Android O release (SDK version 26).
+     *
+     * @return true if supported on the currently selected SDK.
+     */
+    public boolean canUseInvokePolymorphic() {
+        return minSdkVersion >= DexFormat.API_INVOKE_POLYMORPHIC;
     }
 }

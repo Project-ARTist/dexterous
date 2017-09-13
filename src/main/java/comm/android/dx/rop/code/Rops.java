@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +23,11 @@ import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Prototype;
 import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.Type;
+import comm.android.dx.rop.type.TypeBearer;
+import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.rop.cst.CstMethodRef;
+import comm.android.dx.rop.cst.CstType;
+import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.TypeBearer;
 import comm.android.dx.rop.type.TypeList;
 
@@ -1122,7 +1125,7 @@ public final class Rops {
      * @return {@code non-null;} an appropriate instance
      */
     public static Rop ropFor(int opcode, TypeBearer dest, TypeList sources,
-            Constant cst) {
+                             Constant cst) {
         switch (opcode) {
             case RegOps.NOP: return NOP;
             case RegOps.MOVE: return opMove(dest);
@@ -1232,6 +1235,13 @@ public final class Rops {
                 CstType definer = cstMeth.getDefiningClass();
                 meth = meth.withFirstParameter(definer.getClassType());
                 return opInvokeInterface(meth);
+            }
+            case RegOps.INVOKE_POLYMORPHIC: {
+                CstBaseMethodRef cstMeth = (CstMethodRef) cst;
+                Prototype proto = cstMeth.getPrototype();
+                CstType definer = cstMeth.getDefiningClass();
+                Prototype meth = proto.withFirstParameter(definer.getClassType());
+                return opInvokePolymorphic(meth);
             }
         }
 
@@ -1856,7 +1866,7 @@ public final class Rops {
      * type. The result may be a shared instance.
      *
      * @param arrayType {@code non-null;} type of array being created
-     * @param count {@code >= 0;} number of elements that the array should have
+     * @param count {@code count >= 0;} number of elements that the array should have
      * @return {@code non-null;} an appropriate instance
      */
     public static Rop opFilledNewArray(TypeBearer arrayType, int count) {
@@ -2040,6 +2050,20 @@ public final class Rops {
      */
     public static Rop opInvokeInterface(Prototype meth) {
         return new Rop(RegOps.INVOKE_INTERFACE,
+                       meth.getParameterFrameTypes(),
+                       StdTypeList.THROWABLE);
+    }
+
+    /**
+     * Returns the appropriate {@code invoke-polymorphic} rop for the
+     * given type. The result is typically a newly-allocated instance.
+     *
+     * @param meth {@code non-null;} descriptor of the method, including the
+     * {@code this} parameter
+     * @return {@code non-null;} an appropriate instance
+     */
+    public static Rop opInvokePolymorphic(Prototype meth) {
+        return new Rop(RegOps.INVOKE_POLYMORPHIC,
                        meth.getParameterFrameTypes(),
                        StdTypeList.THROWABLE);
     }

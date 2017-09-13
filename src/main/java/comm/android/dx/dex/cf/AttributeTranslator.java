@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,6 +25,7 @@ import comm.android.dx.cf.attrib.AttRuntimeInvisibleParameterAnnotations;
 import comm.android.dx.cf.attrib.AttRuntimeVisibleAnnotations;
 import comm.android.dx.cf.attrib.AttRuntimeVisibleParameterAnnotations;
 import comm.android.dx.cf.attrib.AttSignature;
+import comm.android.dx.cf.attrib.AttSourceDebugExtension;
 import comm.android.dx.cf.attrib.InnerClassList;
 import comm.android.dx.cf.direct.DirectClassFile;
 import comm.android.dx.cf.iface.AttributeList;
@@ -46,6 +45,11 @@ import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeList;
 import comm.android.dx.util.Warning;
+import comm.android.dx.cf.attrib.*;
+import comm.android.dx.cf.iface.Method;
+import comm.android.dx.rop.cst.CstMethodRef;
+import comm.android.dx.util.Warning;
+
 import java.util.ArrayList;
 
 /**
@@ -90,9 +94,14 @@ import java.util.ArrayList;
     public static Annotations getAnnotations(AttributeList attribs) {
         Annotations result = getAnnotations0(attribs);
         Annotation signature = getSignature(attribs);
+        Annotation sourceDebugExtension = getSourceDebugExtension(attribs);
 
         if (signature != null) {
             result = Annotations.combine(result, signature);
+        }
+
+        if (sourceDebugExtension != null) {
+            result = Annotations.combine(result, sourceDebugExtension);
         }
 
         return result;
@@ -214,6 +223,18 @@ import java.util.ArrayList;
         }
 
         return AnnotationUtils.makeSignature(signature.getSignature());
+    }
+
+
+    private static Annotation getSourceDebugExtension(AttributeList attribs) {
+        AttSourceDebugExtension extension = (AttSourceDebugExtension)
+            attribs.findFirst(AttSourceDebugExtension.ATTRIBUTE_NAME);
+
+        if (extension == null) {
+            return null;
+        }
+
+        return AnnotationUtils.makeSourceDebugExtension(extension.getSmapString());
     }
 
     /**

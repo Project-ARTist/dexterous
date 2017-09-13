@@ -18,6 +18,7 @@ package comm.android.multidex;
 
 import comm.android.dx.cf.direct.DirectClassFile;
 import comm.android.dx.cf.direct.StdAttributeFactory;
+import comm.android.dx.cf.direct.DirectClassFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

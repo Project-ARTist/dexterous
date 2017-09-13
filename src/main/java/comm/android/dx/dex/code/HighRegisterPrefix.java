@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +20,7 @@ import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.code.RegisterSpecList;
 import comm.android.dx.rop.code.SourcePosition;
 import comm.android.dx.util.AnnotatedOutput;
+import comm.android.dx.rop.code.RegisterSpec;
 
 /**
  * Combination instruction which turns into a variable number of
@@ -141,7 +140,7 @@ public final class HighRegisterPrefix extends VariableSizeInsn {
      * @return {@code non-null;} the appropriate move instruction
      */
     private static SimpleInsn moveInsnFor(RegisterSpec src, int destIndex) {
-        return DalvInsn.makeMove(SourcePosition.NO_INFO,
+        return makeMove(SourcePosition.NO_INFO,
                 RegisterSpec.make(destIndex, src.getType()),
                 src);
     }

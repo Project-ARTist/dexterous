@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +25,7 @@ import java.util.HashSet;
  * Lengauer-Tarjan method.
  *
  * See A Fast Algorithm for Finding Dominators in a Flowgraph
- * T. Lengauer & R. Tarjan, ACM TOPLAS July 1979, pgs 121-141.
+ * T. Lengauer &amp; R. Tarjan, ACM TOPLAS July 1979, pgs 121-141.
  *
  * This implementation runs in time O(n log n).  The time bound
  * could be changed to O(n * ack(n)) with a small change to the link and eval,

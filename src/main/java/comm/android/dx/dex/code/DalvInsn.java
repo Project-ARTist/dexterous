@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +23,7 @@ import comm.android.dx.ssa.RegisterMapper;
 import comm.android.dx.util.AnnotatedOutput;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.TwoColumnOutput;
+import comm.android.dx.rop.code.RegisterSpec;
 
 import java.util.BitSet;
 
@@ -56,7 +55,7 @@ public abstract class DalvInsn {
      * @return {@code non-null;} an appropriately-constructed instance
      */
     public static SimpleInsn makeMove(SourcePosition position,
-            RegisterSpec dest, RegisterSpec src) {
+                                      RegisterSpec dest, RegisterSpec src) {
         boolean category1 = dest.getCategory() == 1;
         boolean reference = dest.getType().isReference();
         int destReg = dest.getReg();
@@ -337,7 +336,7 @@ public abstract class DalvInsn {
      *
      * @param prefix {@code non-null;} prefix before the address; each follow-on
      * line will be indented to match as well
-     * @param width {@code >= 0;} the width of the output or {@code 0} for
+     * @param width {@code width >= 0;} the width of the output or {@code 0} for
      * unlimited width
      * @param noteIndices whether to include an explicit notation of
      * constant pool indices
@@ -362,7 +361,7 @@ public abstract class DalvInsn {
     /**
      * Sets the output address.
      *
-     * @param address {@code >= 0;} the output address
+     * @param address {@code address >= 0;} the output address
      */
     public final void setAddress(int address) {
         if (address < 0) {
@@ -461,4 +460,30 @@ public abstract class DalvInsn {
      * @return {@code null-ok;} the listing string
      */
     protected abstract String listingString0(boolean noteIndices);
+
+    /**
+     * Helper which returns the string form of the associated constants
+     * for inclusion in a human oriented listing dump.
+     *
+     * This method is only implemented for instructions with one or more
+     * constants.
+     *
+     * @return the constant as a string.
+     */
+    public String cstString() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    /**
+     * Helper which returns the comment form of the associated constants
+     * for inclusion in a human oriented listing dump.
+     *
+     * This method is only implemented for instructions with one or more
+     * constants.
+     *
+     * @return the comment as a string.
+     */
+    public String cstComment() {
+        throw new UnsupportedOperationException("Not supported.");
+    }
 }

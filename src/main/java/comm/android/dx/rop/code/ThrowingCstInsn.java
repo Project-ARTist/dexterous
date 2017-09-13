@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,9 @@ package comm.android.dx.rop.code;
 import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.type.Type;
+import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.rop.cst.Constant;
+import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.type.TypeList;
 
 /**
@@ -47,7 +48,7 @@ public final class ThrowingCstInsn
         super(opcode, position, null, sources, cst);
 
         if (opcode.getBranchingness() != Rop.BRANCH_THROW) {
-            throw new IllegalArgumentException("bogus branchingness");
+            throw new IllegalArgumentException("opcode with invalid branchingness: " + opcode.getBranchingness());
         }
 
         if (catches == null) {

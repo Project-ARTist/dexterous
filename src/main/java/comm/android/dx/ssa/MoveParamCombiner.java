@@ -21,6 +21,10 @@ import comm.android.dx.rop.code.LocalItem;
 import comm.android.dx.rop.code.RegOps;
 import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.cst.CstInteger;
+import comm.android.dx.rop.code.LocalItem;
+import comm.android.dx.rop.code.RegOps;
+import comm.android.dx.rop.code.RegisterSpec;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -104,12 +108,12 @@ public class MoveParamCombiner {
                      */
 
                     RegisterMapper mapper = new RegisterMapper() {
-                        /** @inheritDoc */
+                        /** {@inheritDoc} */
                         public int getNewRegisterCount() {
                             return ssaMeth.getRegCount();
                         }
 
-                        /** @inheritDoc */
+                        /** {@inheritDoc} */
                         public RegisterSpec map(RegisterSpec registerSpec) {
                             if (registerSpec.getReg() == specB.getReg()) {
                                 return specA;

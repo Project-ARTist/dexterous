@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +20,9 @@ import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.rop.type.StdTypeList;
+import comm.android.dx.rop.type.TypeList;
+
 import java.util.ArrayList;
 
 /**
@@ -56,7 +57,7 @@ public final class FillArrayDataInsn
         super(opcode, position, null, sources);
 
         if (opcode.getBranchingness() != Rop.BRANCH_NONE) {
-            throw new IllegalArgumentException("bogus branchingness");
+            throw new IllegalArgumentException("opcode with invalid branchingness: " + opcode.getBranchingness());
         }
 
         this.initValues = initValues;

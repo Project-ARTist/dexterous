@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +17,13 @@
 package comm.android.dx.dex.file;
 
 import comm.android.dx.rop.cst.Constant;
+import comm.android.dx.rop.cst.CstProtoRef;
 import comm.android.dx.rop.type.Prototype;
 import comm.android.dx.util.AnnotatedOutput;
 import comm.android.dx.util.Hex;
+import comm.android.dx.rop.cst.CstProtoRef;
+import comm.android.dx.util.Hex;
+
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -55,7 +57,22 @@ public final class ProtoIdsSection extends UniformItemSection {
     /** {@inheritDoc} */
     @Override
     public IndexedItem get(Constant cst) {
-        throw new UnsupportedOperationException("unsupported");
+        if (cst == null) {
+            throw new NullPointerException("cst == null");
+        }
+
+        if (!(cst instanceof CstProtoRef)) {
+            throw new IllegalArgumentException("cst not instance of CstProtoRef");
+        }
+
+        throwIfNotPrepared();
+        CstProtoRef protoRef = (CstProtoRef) cst;
+        IndexedItem result = protoIds.get(protoRef.getPrototype());
+        if (result == null) {
+            throw new IllegalArgumentException("not found");
+        }
+
+        return result;
     }
 
     /**

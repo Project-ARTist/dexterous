@@ -19,6 +19,9 @@ package comm.android.dx.ssa;
 import comm.android.dx.util.BitIntSet;
 import comm.android.dx.util.IntSet;
 import comm.android.dx.util.ListIntSet;
+import comm.android.dx.util.BitIntSet;
+import comm.android.dx.util.IntSet;
+import comm.android.dx.util.ListIntSet;
 
 
 /**

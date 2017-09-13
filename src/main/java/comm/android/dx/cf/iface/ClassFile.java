@@ -20,6 +20,10 @@ import comm.android.dx.rop.cst.ConstantPool;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.TypeList;
+import comm.android.dx.rop.cst.ConstantPool;
+import comm.android.dx.rop.cst.CstString;
+import comm.android.dx.rop.cst.CstType;
+import comm.android.dx.rop.type.TypeList;
 
 /**
  * Interface for things which purport to be class files or reasonable

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,13 +21,15 @@ import comm.android.dx.rop.code.RegisterSpec;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeBearer;
 import comm.android.dx.util.Hex;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.util.Hex;
 
 /**
  * Representation of an array of local variables, with Java semantics.
  *
  * <p><b>Note:</b> For the most part, the documentation for this class
- * ignores the distinction between {@link comm.android.dx.rop.type.Type} and {@link
- * comm.android.dx.rop.type.TypeBearer}.</p>
+ * ignores the distinction between {@link Type} and {@link
+ * TypeBearer}.</p>
  */
 public class OneLocalsArray extends LocalsArray {
     /** {@code non-null;} actual array */
@@ -47,7 +47,7 @@ public class OneLocalsArray extends LocalsArray {
         locals = new TypeBearer[maxLocals];
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public OneLocalsArray copy() {
         OneLocalsArray result = new OneLocalsArray(locals.length);
 
@@ -56,7 +56,7 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void annotate(ExceptionWithContext ex) {
         for (int i = 0; i < locals.length; i++) {
             TypeBearer type = locals[i];
@@ -65,7 +65,7 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** {@inheritDoc*/
+    /** {@inheritDoc} */
     public String toHuman() {
         StringBuilder sb = new StringBuilder();
 
@@ -78,7 +78,7 @@ public class OneLocalsArray extends LocalsArray {
         return sb.toString();
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void makeInitialized(Type type) {
         int len = locals.length;
 
@@ -98,12 +98,12 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public int getMaxLocals() {
         return locals.length;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void set(int idx, TypeBearer type) {
         throwIfImmutable();
 
@@ -133,23 +133,23 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void set(RegisterSpec spec) {
         set(spec.getReg(), spec);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public void invalidate(int idx) {
         throwIfImmutable();
         locals[idx] = null;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public TypeBearer getOrNull(int idx) {
         return locals[idx];
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public TypeBearer get(int idx) {
         TypeBearer result = locals[idx];
 
@@ -160,7 +160,7 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public TypeBearer getCategory1(int idx) {
         TypeBearer result = get(idx);
         Type type = result.getType();
@@ -176,7 +176,7 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public TypeBearer getCategory2(int idx) {
         TypeBearer result = get(idx);
 
@@ -187,7 +187,7 @@ public class OneLocalsArray extends LocalsArray {
         return result;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public LocalsArray merge(LocalsArray other) {
         if (other instanceof OneLocalsArray) {
@@ -219,7 +219,7 @@ public class OneLocalsArray extends LocalsArray {
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     @Override
     public LocalsArraySet mergeWithSubroutineCaller
             (LocalsArray other, int predLabel) {

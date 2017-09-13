@@ -22,6 +22,7 @@ package saarland.cispa.dexterous.cli;
 
 import comm.android.dex.*;
 import comm.android.dex.util.FileUtils;
+import comm.android.dx.command.dexer.DxContext;
 import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
 import saarland.cispa.dexterous.Config;
@@ -52,6 +53,8 @@ public class Dexterously {
 //    public final static String CODE_LIB_NAME = "codelib.apk";
 //    public final static String CODE_LIB_DEX_NAME = "codelib.apk:classes.dex";
 
+    private DxContext context;
+
     private final Config runConfig;
 
     Map<String, Dex> dexBuffers = null;
@@ -75,6 +78,7 @@ public class Dexterously {
     Map<String, HashSet<ClassDefStats>> classDefStats = null;
 
     public Dexterously(final Config dexterousRunConfig) {
+        this.context = new DxContext();
         this.dexBuffers = new LinkedHashMap<>();
         this.dexSourceFiles = new HashSet<>();
 
@@ -728,8 +732,12 @@ public class Dexterously {
 
         Dex mergedDexContent = null;
         try {
-            DexMerger dexMerger = new DexMerger(new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)},
-                    CODE_LIB_DEX_NAME, CollisionPolicy.FAIL);
+            DexMerger dexMerger = new DexMerger(
+                    new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)},
+                    CODE_LIB_DEX_NAME,
+                    CollisionPolicy.FAIL,
+                    this.context
+            );
             mergedDexContent = dexMerger.mergeMethodsOnly();
 
         } catch (final IOException e) {

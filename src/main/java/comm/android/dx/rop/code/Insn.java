@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +20,8 @@ import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeList;
 import comm.android.dx.util.ToHuman;
+import comm.android.dx.rop.type.StdTypeList;
+import comm.android.dx.rop.type.TypeList;
 
 /**
  * A register-based instruction. An instruction is the combination of
@@ -418,6 +418,13 @@ public abstract class Insn implements ToHuman {
          * @param insn {@code non-null;} the instruction to visit
          */
         public void visitFillArrayDataInsn(FillArrayDataInsn insn);
+
+        /**
+         * Visits a {@link InvokePolymorphicInsn}.
+         *
+         * @param insn {@code non-null;} the instruction to visit
+         */
+        public void visitInvokePolymorphicInsn(InvokePolymorphicInsn insn);
     }
 
     /**
@@ -426,32 +433,44 @@ public abstract class Insn implements ToHuman {
      */
     public static class BaseVisitor implements Visitor {
         /** {@inheritDoc} */
+        @Override
         public void visitPlainInsn(PlainInsn insn) {
             // This space intentionally left blank.
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitPlainCstInsn(PlainCstInsn insn) {
             // This space intentionally left blank.
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitSwitchInsn(SwitchInsn insn) {
             // This space intentionally left blank.
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitThrowingCstInsn(ThrowingCstInsn insn) {
             // This space intentionally left blank.
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitThrowingInsn(ThrowingInsn insn) {
             // This space intentionally left blank.
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitFillArrayDataInsn(FillArrayDataInsn insn) {
+            // This space intentionally left blank.
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void visitInvokePolymorphicInsn(InvokePolymorphicInsn insn) {
             // This space intentionally left blank.
         }
     }

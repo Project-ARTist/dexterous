@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +17,7 @@
 package comm.android.dex;
 
 import comm.android.dex.util.ByteInput;
+import comm.android.dex.util.ByteOutput;
 import comm.android.dex.util.ByteOutput;
 
 /**
@@ -48,33 +47,6 @@ public final class Leb128 {
         }
 
         return count + 1;
-    }
-
-    /**
-     * Gets the number of bytes in the signed LEB128 encoding of the
-     * given value.
-     *
-     * @param value the value in question
-     * @return its write size, in bytes
-     */
-    public static int signedLeb128Size(int value) {
-        // TODO: This could be much cleverer.
-
-        int remaining = value >> 7;
-        int count = 0;
-        boolean hasMore = true;
-        int end = ((value & Integer.MIN_VALUE) == 0) ? 0 : -1;
-
-        while (hasMore) {
-            hasMore = (remaining != end)
-                || ((remaining & 1) != ((value >> 6) & 1));
-
-            value = remaining;
-            remaining >>= 7;
-            count++;
-        }
-
-        return count;
     }
 
     /**

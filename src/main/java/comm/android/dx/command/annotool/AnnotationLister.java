@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +26,15 @@ import comm.android.dx.cf.iface.Attribute;
 import comm.android.dx.cf.iface.AttributeList;
 import comm.android.dx.rop.annotation.Annotation;
 import comm.android.dx.util.ByteArray;
+import comm.android.dx.cf.attrib.AttRuntimeInvisibleAnnotations;
+import comm.android.dx.cf.attrib.AttRuntimeVisibleAnnotations;
+import comm.android.dx.cf.attrib.BaseAnnotations;
+import comm.android.dx.cf.direct.ClassPathOpener;
+import comm.android.dx.cf.direct.DirectClassFile;
+import comm.android.dx.cf.iface.Attribute;
+import comm.android.dx.rop.annotation.Annotation;
+import comm.android.dx.util.ByteArray;
+
 import java.io.File;
 import java.lang.annotation.ElementType;
 import java.util.HashSet;

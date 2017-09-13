@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,7 +46,7 @@ public final class SparseSwitchPayloadDecodedInstruction
         this.targets = targets;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public int getRegisterCount() {
         return 0;
     }
@@ -61,7 +59,7 @@ public final class SparseSwitchPayloadDecodedInstruction
         return targets;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public DecodedInstruction withIndex(int newIndex) {
         throw new UnsupportedOperationException("no index in instruction");
     }

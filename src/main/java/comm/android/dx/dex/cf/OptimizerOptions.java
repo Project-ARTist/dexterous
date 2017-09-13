@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,24 +34,18 @@ public class OptimizerOptions {
      * should be optimized. {@code null} if this constraint was not
      * specified on the command line
      */
-    private static HashSet<String> optimizeList;
+    private HashSet<String> optimizeList;
 
     /**
      * {@code null-ok;} hash set of class name + method names that should NOT
      * be optimized.  null if this constraint was not specified on the
      * command line
      */
-    private static HashSet<String> dontOptimizeList;
+    private HashSet<String> dontOptimizeList;
 
     /** true if the above lists have been loaded */
-    private static boolean optimizeListsLoaded;
+    private boolean optimizeListsLoaded;
 
-    /**
-     * This class is uninstantiable.
-     */
-    private OptimizerOptions() {
-        // This space intentionally left blank.
-    }
 
     /**
      * Loads the optimize/don't optimize lists from files.
@@ -61,7 +53,7 @@ public class OptimizerOptions {
      * @param optimizeListFile Pathname
      * @param dontOptimizeListFile Pathname
      */
-    public static void loadOptimizeLists(String optimizeListFile,
+    public void loadOptimizeLists(String optimizeListFile,
             String dontOptimizeListFile) {
         if (optimizeListsLoaded) {
             return;
@@ -128,7 +120,7 @@ public class OptimizerOptions {
      * @param advice {@code non-null;} translation advice
      * @param rmeth {@code non-null;} method with all optimization steps run.
      */
-    public static void compareOptimizerStep(RopMethod nonOptRmeth,
+    public void compareOptimizerStep(RopMethod nonOptRmeth,
             int paramSize, boolean isStatic, CfOptions args,
             TranslationAdvice advice, RopMethod rmeth) {
         EnumSet<Optimizer.OptionalStep> steps;
@@ -165,7 +157,7 @@ public class OptimizerOptions {
      * @param canonicalMethodName name of method being considered
      * @return true if it should be optimized
      */
-    public static boolean shouldOptimize(String canonicalMethodName) {
+    public boolean shouldOptimize(String canonicalMethodName) {
         // Optimize only what's in the optimize list.
         if (optimizeList != null) {
             return optimizeList.contains(canonicalMethodName);

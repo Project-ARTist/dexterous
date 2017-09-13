@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +26,9 @@ import comm.android.dx.rop.cst.CstFieldRef;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.util.AnnotatedOutput;
+import comm.android.dx.dex.code.CstInsn;
+import comm.android.dx.rop.code.RegisterSpec;
+
 import java.util.BitSet;
 
 /**
@@ -50,14 +51,14 @@ public final class Form21c extends InsnFormat {
     @Override
     public String insnArgString(DalvInsn insn) {
         RegisterSpecList regs = insn.getRegisters();
-        return regs.get(0).regString() + ", " + cstString(insn);
+        return regs.get(0).regString() + ", " + insn.cstString();
     }
 
     /** {@inheritDoc} */
     @Override
     public String insnCommentString(DalvInsn insn, boolean noteIndices) {
         if (noteIndices) {
-            return cstComment(insn);
+            return insn.cstComment();
         } else {
             return "";
         }

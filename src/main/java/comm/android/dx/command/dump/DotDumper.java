@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +23,7 @@ import comm.android.dx.cf.direct.StdAttributeFactory;
 import comm.android.dx.cf.iface.Member;
 import comm.android.dx.cf.iface.Method;
 import comm.android.dx.cf.iface.ParseObserver;
+import comm.android.dx.dex.DexOptions;
 import comm.android.dx.rop.code.AccessFlags;
 import comm.android.dx.rop.code.BasicBlock;
 import comm.android.dx.rop.code.BasicBlockList;
@@ -32,6 +31,18 @@ import comm.android.dx.rop.code.DexTranslationAdvice;
 import comm.android.dx.rop.code.RopMethod;
 import comm.android.dx.rop.code.TranslationAdvice;
 import comm.android.dx.ssa.Optimizer;
+import comm.android.dx.util.ByteArray;
+import comm.android.dx.util.Hex;
+import comm.android.dx.util.IntList;
+import comm.android.dx.cf.code.Ropper;
+import comm.android.dx.cf.direct.DirectClassFile;
+import comm.android.dx.cf.iface.Member;
+import comm.android.dx.cf.iface.Method;
+import comm.android.dx.cf.iface.ParseObserver;
+import comm.android.dx.dex.DexOptions;
+import comm.android.dx.rop.code.AccessFlags;
+import comm.android.dx.rop.code.BasicBlockList;
+import comm.android.dx.rop.code.TranslationAdvice;
 import comm.android.dx.util.ByteArray;
 import comm.android.dx.util.Hex;
 import comm.android.dx.util.IntList;
@@ -48,6 +59,7 @@ public class DotDumper implements ParseObserver {
     private final boolean strictParse;
     private final boolean optimize;
     private final Args args;
+    private final DexOptions dexOptions;
 
     static void dump(byte[] bytes, String filePath, Args args) {
         new DotDumper(bytes, filePath, args).run();
@@ -59,6 +71,7 @@ public class DotDumper implements ParseObserver {
         this.strictParse = args.strictParse;
         this.optimize = args.optimize;
         this.args = args;
+        this.dexOptions = new DexOptions();
     }
 
     private void run() {
@@ -117,7 +130,7 @@ public class DotDumper implements ParseObserver {
 
         TranslationAdvice advice = DexTranslationAdvice.THE_ONE;
         RopMethod rmeth =
-            Ropper.convert(meth, advice, classFile.getMethods());
+            Ropper.convert(meth, advice, classFile.getMethods(), dexOptions);
 
         if (optimize) {
             boolean isStatic = AccessFlags.isStatic(meth.getAccessFlags());

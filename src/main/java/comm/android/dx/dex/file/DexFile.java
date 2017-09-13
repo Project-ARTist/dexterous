@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,9 +23,12 @@ import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.cst.CstBaseMethodRef;
 import comm.android.dx.rop.cst.CstEnumRef;
 import comm.android.dx.rop.cst.CstFieldRef;
+import comm.android.dx.rop.cst.CstProtoRef;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Type;
+import comm.android.dx.util.ByteArrayAnnotatedOutput;
+import comm.android.dx.rop.cst.*;
 import comm.android.dx.util.ByteArrayAnnotatedOutput;
 
 import java.io.IOException;
@@ -112,19 +113,19 @@ public final class DexFile {
         this.dexOptions = dexOptions;
 
         header = new HeaderSection(this);
-        typeLists = new MixedItemSection(null, this, 4, SortType.NONE);
-        wordData = new MixedItemSection("word_data", this, 4, SortType.TYPE);
+        typeLists = new MixedItemSection(null, this, 4, MixedItemSection.SortType.NONE);
+        wordData = new MixedItemSection("word_data", this, 4, MixedItemSection.SortType.TYPE);
         stringData =
-            new MixedItemSection("string_data", this, 1, SortType.INSTANCE);
-        classData = new MixedItemSection(null, this, 1, SortType.NONE);
-        byteData = new MixedItemSection("byte_data", this, 1, SortType.TYPE);
+            new MixedItemSection("string_data", this, 1, MixedItemSection.SortType.INSTANCE);
+        classData = new MixedItemSection(null, this, 1, MixedItemSection.SortType.NONE);
+        byteData = new MixedItemSection("byte_data", this, 1, MixedItemSection.SortType.TYPE);
         stringIds = new StringIdsSection(this);
         typeIds = new TypeIdsSection(this);
         protoIds = new ProtoIdsSection(this);
         fieldIds = new FieldIdsSection(this);
         methodIds = new MethodIdsSection(this);
         classDefs = new ClassDefsSection(this);
-        map = new MixedItemSection("map", this, 4, SortType.NONE);
+        map = new MixedItemSection("map", this, 4, MixedItemSection.SortType.NONE);
 
         /*
          * This is the list of sections in the order they appear in
@@ -478,6 +479,8 @@ public final class DexFile {
             return methodIds.get(cst);
         } else if (cst instanceof CstFieldRef) {
             return fieldIds.get(cst);
+        } else if (cst instanceof CstProtoRef) {
+            return protoIds.get(cst);
         } else {
             return null;
         }

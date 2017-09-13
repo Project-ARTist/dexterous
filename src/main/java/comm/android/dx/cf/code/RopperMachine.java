@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +21,7 @@ import comm.android.dx.cf.iface.MethodList;
 import comm.android.dx.rop.code.AccessFlags;
 import comm.android.dx.rop.code.FillArrayDataInsn;
 import comm.android.dx.rop.code.Insn;
+import comm.android.dx.rop.code.InvokePolymorphicInsn;
 import comm.android.dx.rop.code.PlainCstInsn;
 import comm.android.dx.rop.code.PlainInsn;
 import comm.android.dx.rop.code.RegOps;
@@ -46,6 +45,14 @@ import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeBearer;
 import comm.android.dx.rop.type.TypeList;
 import comm.android.dx.util.IntList;
+import comm.android.dx.cf.iface.Method;
+import comm.android.dx.rop.code.*;
+import comm.android.dx.rop.cst.CstFieldRef;
+import comm.android.dx.rop.cst.CstMethodRef;
+import comm.android.dx.rop.cst.CstNat;
+import comm.android.dx.rop.type.TypeBearer;
+import comm.android.dx.rop.type.TypeList;
+
 import java.util.ArrayList;
 
 /**
@@ -608,8 +615,11 @@ import java.util.ArrayList;
             returns = true;
         } else if (cst != null) {
             if (canThrow) {
-                insn =
-                    new ThrowingCstInsn(rop, pos, sources, catches, cst);
+                if (rop.getOpcode() == RegOps.INVOKE_POLYMORPHIC) {
+                    insn = makeInvokePolymorphicInsn(rop, pos, sources, catches, cst);
+                } else {
+                    insn = new ThrowingCstInsn(rop, pos, sources, catches, cst);
+                }
                 catchesUsed = true;
                 primarySuccessorIndex = catches.size();
             } else {
@@ -764,7 +774,7 @@ import java.util.ArrayList;
     /**
      * Gets the register opcode for the given Java opcode.
      *
-     * @param jop {@code >= 0;} the Java opcode
+     * @param jop {@code jop >= 0;} the Java opcode
      * @param cst {@code null-ok;} the constant argument, if any
      * @return {@code >= 0;} the corresponding register opcode
      */
@@ -951,6 +961,12 @@ import java.util.ArrayList;
                         }
                     }
                 }
+                // If the method reference is a signature polymorphic method
+                // substitute invoke-polymorphic for invoke-virtual. This only
+                // affects MethodHandle.invoke and MethodHandle.invokeExact.
+                if (ref.isSignaturePolymorphic()) {
+                    return RegOps.INVOKE_POLYMORPHIC;
+                }
                 return RegOps.INVOKE_VIRTUAL;
             }
             case ByteOps.INVOKESPECIAL: {
@@ -960,10 +976,13 @@ import java.util.ArrayList;
                  * on "invokespecial" as well as section 4.8.2 (7th
                  * bullet point) for the gory details.
                  */
+                /* TODO: Consider checking that invoke-special target
+                 * method is private, or constructor since otherwise ART
+                 * verifier will reject it.
+                 */
                 CstMethodRef ref = (CstMethodRef) cst;
                 if (ref.isInstanceInit() ||
-                    (ref.getDefiningClass().equals(method.getDefiningClass())) ||
-                    !method.getAccSuper()) {
+                    (ref.getDefiningClass().equals(method.getDefiningClass()))) {
                     return RegOps.INVOKE_DIRECT;
                 }
                 return RegOps.INVOKE_SUPER;
@@ -1002,5 +1021,11 @@ import java.util.ArrayList;
         }
 
         throw new RuntimeException("shouldn't happen");
+    }
+
+    private Insn makeInvokePolymorphicInsn(Rop rop, SourcePosition pos, RegisterSpecList sources,
+        TypeList catches, Constant cst) {
+        CstMethodRef cstMethodRef = (CstMethodRef) cst;
+        return new InvokePolymorphicInsn(rop, pos, sources, catches, cstMethodRef);
     }
 }

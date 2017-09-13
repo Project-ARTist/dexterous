@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +30,10 @@ import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.util.ByteArray;
 import comm.android.dx.util.Hex;
+import comm.android.dx.rop.cst.CstDouble;
+import comm.android.dx.rop.cst.CstLong;
+import comm.android.dx.util.ByteArray;
+
 import java.util.ArrayList;
 
 /**

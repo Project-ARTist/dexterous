@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +27,8 @@ import comm.android.dx.rop.cst.CstFieldRef;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.rop.type.Type;
+import comm.android.dx.rop.code.RegisterSpec;
+
 import java.util.HashMap;
 
 /**
@@ -215,6 +215,8 @@ public final class RopToDop {
     //     Opcodes.SHL_INT_LIT8
     //     Opcodes.SHR_INT_LIT8
     //     Opcodes.USHR_INT_LIT8
+    //     Opcodes.INVOKE_POLYMORPHIC
+    //     Opcodes.INVOKE_CUSTOM
     // END(first-opcodes)
 
     static {
@@ -485,15 +487,16 @@ public final class RopToDop {
          */
 
         switch (rop.getOpcode()) {
-            case RegOps.MOVE_EXCEPTION:   return Dops.MOVE_EXCEPTION;
-            case RegOps.INVOKE_STATIC:    return Dops.INVOKE_STATIC;
-            case RegOps.INVOKE_VIRTUAL:   return Dops.INVOKE_VIRTUAL;
-            case RegOps.INVOKE_SUPER:     return Dops.INVOKE_SUPER;
-            case RegOps.INVOKE_DIRECT:    return Dops.INVOKE_DIRECT;
-            case RegOps.INVOKE_INTERFACE: return Dops.INVOKE_INTERFACE;
-            case RegOps.NEW_ARRAY:        return Dops.NEW_ARRAY;
-            case RegOps.FILLED_NEW_ARRAY: return Dops.FILLED_NEW_ARRAY;
-            case RegOps.FILL_ARRAY_DATA:  return Dops.FILL_ARRAY_DATA;
+            case RegOps.MOVE_EXCEPTION:     return Dops.MOVE_EXCEPTION;
+            case RegOps.INVOKE_STATIC:      return Dops.INVOKE_STATIC;
+            case RegOps.INVOKE_VIRTUAL:     return Dops.INVOKE_VIRTUAL;
+            case RegOps.INVOKE_SUPER:       return Dops.INVOKE_SUPER;
+            case RegOps.INVOKE_DIRECT:      return Dops.INVOKE_DIRECT;
+            case RegOps.INVOKE_INTERFACE:   return Dops.INVOKE_INTERFACE;
+            case RegOps.INVOKE_POLYMORPHIC: return Dops.INVOKE_POLYMORPHIC;
+            case RegOps.NEW_ARRAY:          return Dops.NEW_ARRAY;
+            case RegOps.FILLED_NEW_ARRAY:   return Dops.FILLED_NEW_ARRAY;
+            case RegOps.FILL_ARRAY_DATA:    return Dops.FILL_ARRAY_DATA;
             case RegOps.MOVE_RESULT: {
                 RegisterSpec resultReg = insn.getResult();
 

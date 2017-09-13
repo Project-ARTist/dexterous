@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,9 +20,13 @@ import comm.android.dex.util.ExceptionWithContext;
 import comm.android.dx.io.Opcodes;
 import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.cst.CstBaseMethodRef;
+import comm.android.dx.rop.cst.CstProtoRef;
 import comm.android.dx.util.AnnotatedOutput;
 import comm.android.dx.util.FixedSizeList;
 import comm.android.dx.util.IndentingWriter;
+import comm.android.dx.rop.cst.CstProtoRef;
+import comm.android.dx.util.IndentingWriter;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -71,6 +73,8 @@ public final class DalvInsnList extends FixedSizeList {
      * Constructs an instance. All indices initially contain {@code null}.
      *
      * @param size the size of the list
+     * @param regCount count, in register-units, of the number of registers
+     * this code block requires.
      */
     public DalvInsnList(int size, int regCount) {
         super(size);
@@ -191,21 +195,32 @@ public final class DalvInsnList extends FixedSizeList {
 
         for (int i = 0; i < sz; i++) {
             DalvInsn insn = (DalvInsn) get0(i);
+            int count = 0;
 
-            if (!(insn instanceof CstInsn)) {
+            if (insn instanceof CstInsn) {
+                Constant cst = ((CstInsn) insn).getConstant();
+                if (cst instanceof CstBaseMethodRef) {
+                    CstBaseMethodRef methodRef = (CstBaseMethodRef) cst;
+                    boolean isStatic =
+                        (insn.getOpcode().getFamily() == Opcodes.INVOKE_STATIC);
+                    count = methodRef.getParameterWordCount(isStatic);
+                }
+            } else if (insn instanceof MultiCstInsn) {
+                if (insn.getOpcode().getFamily() != Opcodes.INVOKE_POLYMORPHIC) {
+                    throw new RuntimeException("Expecting invoke-polymorphic");
+                }
+                MultiCstInsn mci = (MultiCstInsn) insn;
+                // Invoke-polymorphic has two constants: [0] method-ref and
+                // [1] call site prototype. The number of arguments is based
+                // on the call site prototype since these are the arguments
+                // presented. The method-ref is always MethodHandle.invoke(Object[])
+                // or MethodHandle.invokeExact(Object[]).
+                CstProtoRef proto = (CstProtoRef) mci.getConstant(1);
+                count = proto.getPrototype().getParameterTypes().getWordCount();
+                count = count + 1; // And one for receiver (method handle).
+            } else {
                 continue;
             }
-
-            Constant cst = ((CstInsn) insn).getConstant();
-
-            if (!(cst instanceof CstBaseMethodRef)) {
-                continue;
-            }
-
-            boolean isStatic =
-                (insn.getOpcode().getFamily() == Opcodes.INVOKE_STATIC);
-            int count =
-                ((CstBaseMethodRef) cst).getParameterWordCount(isStatic);
 
             if (count > result) {
                 result = count;

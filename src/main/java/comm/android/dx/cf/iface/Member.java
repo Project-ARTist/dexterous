@@ -19,6 +19,7 @@ package comm.android.dx.cf.iface;
 import comm.android.dx.rop.cst.CstNat;
 import comm.android.dx.rop.cst.CstString;
 import comm.android.dx.rop.cst.CstType;
+import comm.android.dx.rop.cst.CstNat;
 
 /**
  * Interface representing members of class files (that is, fields and methods).

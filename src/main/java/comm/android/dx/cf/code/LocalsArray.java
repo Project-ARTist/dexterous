@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +22,9 @@ import comm.android.dx.rop.type.Type;
 import comm.android.dx.rop.type.TypeBearer;
 import comm.android.dx.util.MutabilityControl;
 import comm.android.dx.util.ToHuman;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.rop.type.TypeBearer;
+import comm.android.dx.util.MutabilityControl;
 
 /**
  * Representation of an array of local variables, with Java semantics.

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,6 +36,8 @@ public final class TableOfContents {
     public final Section fieldIds = new Section(0x0004);
     public final Section methodIds = new Section(0x0005);
     public final Section classDefs = new Section(0x0006);
+    public final Section callSiteIds = new Section(0x0007);
+    public final Section methodHandles = new Section(0x0008);
     public final Section mapList = new Section(0x1000);
     public final Section typeLists = new Section(0x1001);
     public final Section annotationSetRefLists = new Section(0x1002);
@@ -50,9 +50,9 @@ public final class TableOfContents {
     public final Section encodedArrays = new Section(0x2005);
     public final Section annotationsDirectories = new Section(0x2006);
     public final Section[] sections = {
-            header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs, mapList,
-            typeLists, annotationSetRefLists, annotationSets, classDatas, codes, stringDatas,
-            debugInfos, annotations, encodedArrays, annotationsDirectories
+        header, stringIds, typeIds, protoIds, fieldIds, methodIds, classDefs, mapList, callSiteIds,
+        methodHandles, typeLists, annotationSetRefLists, annotationSets, classDatas, codes,
+        stringDatas, debugInfos, annotations, encodedArrays, annotationsDirectories
     };
 
     public int apiLevel;
@@ -78,7 +78,12 @@ public final class TableOfContents {
         byte[] magic = headerIn.readByteArray(8);
 
         if (!DexFormat.isSupportedDexMagic(magic)) {
-            throw new DexException("Unexpected magic: " + Arrays.toString(magic));
+            String msg =
+                    String.format("Unexpected magic: [0x%02x, 0x%02x, 0x%02x, 0x%02x, "
+                                  + "0x%02x, 0x%02x, 0x%02x, 0x%02x]",
+                                  magic[0], magic[1], magic[2], magic[3],
+                                  magic[4], magic[5], magic[6], magic[7]);
+            throw new DexException(msg);
         }
 
         apiLevel = DexFormat.magicToApi(magic);

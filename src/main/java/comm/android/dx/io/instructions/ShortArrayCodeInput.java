@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,12 +37,12 @@ public final class ShortArrayCodeInput extends BaseCodeCursor
         this.array = array;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public boolean hasMore() {
         return cursor() < array.length;
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public int read() throws EOFException {
         try {
             int value = array[cursor()];
@@ -55,7 +53,7 @@ public final class ShortArrayCodeInput extends BaseCodeCursor
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public int readInt() throws EOFException {
         int short0 = read();
         int short1 = read();
@@ -63,7 +61,7 @@ public final class ShortArrayCodeInput extends BaseCodeCursor
         return short0 | (short1 << 16);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public long readLong() throws EOFException {
         long short0 = read();
         long short1 = read();

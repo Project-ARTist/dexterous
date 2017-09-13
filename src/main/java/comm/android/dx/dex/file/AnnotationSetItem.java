@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +19,9 @@ package comm.android.dx.dex.file;
 import comm.android.dx.rop.annotation.Annotation;
 import comm.android.dx.rop.annotation.Annotations;
 import comm.android.dx.util.AnnotatedOutput;
+import comm.android.dx.util.Hex;
+import comm.android.dx.rop.annotation.Annotation;
+import comm.android.dx.rop.annotation.Annotations;
 import comm.android.dx.util.Hex;
 
 /**

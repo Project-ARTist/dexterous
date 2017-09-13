@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,6 +40,16 @@ import comm.android.dx.rop.type.StdTypeList;
 import comm.android.dx.rop.type.Type;
 import comm.android.dx.util.AnnotatedOutput;
 import comm.android.dx.util.ByteArrayAnnotatedOutput;
+import comm.android.dx.dex.code.LocalList;
+import comm.android.dx.dex.code.PositionList;
+import comm.android.dx.rop.code.RegisterSpec;
+import comm.android.dx.rop.code.SourcePosition;
+import comm.android.dx.rop.cst.CstMethodRef;
+import comm.android.dx.rop.cst.CstString;
+import comm.android.dx.rop.cst.CstType;
+import comm.android.dx.rop.type.StdTypeList;
+import comm.android.dx.util.ByteArrayAnnotatedOutput;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -207,7 +215,7 @@ public final class DebugInfoEncoder {
         emitHeader(sortedPositions, methodArgs);
 
         // TODO: Make this mark be the actual prologue end.
-        output.writeByte(DBG_SET_PROLOGUE_END);
+        output.writeByte(DebugInfoConstants.DBG_SET_PROLOGUE_END);
 
         if (annotateTo != null || debugPrint != null) {
             annotate(1, String.format("%04x: prologue end",address));
@@ -623,7 +631,7 @@ public final class DebugInfoEncoder {
 
         int mark = output.getCursor();
 
-        output.writeByte(DBG_RESTART_LOCAL);
+        output.writeByte(DebugInfoConstants.DBG_RESTART_LOCAL);
         emitUnsignedLeb128(entry.getRegister());
 
         if (annotateTo != null || debugPrint != null) {
@@ -699,7 +707,7 @@ public final class DebugInfoEncoder {
 
         int mark = output.getCursor();
 
-        output.writeByte(DBG_START_LOCAL);
+        output.writeByte(DebugInfoConstants.DBG_START_LOCAL);
 
         emitUnsignedLeb128(entry.getRegister());
         emitStringIndex(entry.getName());
@@ -728,7 +736,7 @@ public final class DebugInfoEncoder {
 
         int mark = output.getCursor();
 
-        output.writeByte(DBG_START_LOCAL_EXTENDED);
+        output.writeByte(DebugInfoConstants.DBG_START_LOCAL_EXTENDED);
 
         emitUnsignedLeb128(entry.getRegister());
         emitStringIndex(entry.getName());
@@ -757,7 +765,7 @@ public final class DebugInfoEncoder {
 
         int mark = output.getCursor();
 
-        output.writeByte(DBG_END_LOCAL);
+        output.writeByte(DebugInfoConstants.DBG_END_LOCAL);
         output.writeUleb128(entry.getRegister());
 
         if (annotateTo != null || debugPrint != null) {
@@ -796,8 +804,8 @@ public final class DebugInfoEncoder {
                     "Position entries must be in ascending address order");
         }
 
-        if ((deltaLines < DBG_LINE_BASE)
-                || (deltaLines > (DBG_LINE_BASE + DBG_LINE_RANGE -1))) {
+        if ((deltaLines < DebugInfoConstants.DBG_LINE_BASE)
+                || (deltaLines > (DebugInfoConstants.DBG_LINE_BASE + DebugInfoConstants.DBG_LINE_RANGE -1))) {
             emitAdvanceLine(deltaLines);
             deltaLines = 0;
         }
@@ -840,14 +848,14 @@ public final class DebugInfoEncoder {
      * of range
      */
     private static int computeOpcode(int deltaLines, int deltaAddress) {
-        if (deltaLines < DBG_LINE_BASE
-                || deltaLines > (DBG_LINE_BASE + DBG_LINE_RANGE -1)) {
+        if (deltaLines < DebugInfoConstants.DBG_LINE_BASE
+                || deltaLines > (DebugInfoConstants.DBG_LINE_BASE + DebugInfoConstants.DBG_LINE_RANGE -1)) {
 
             throw new RuntimeException("Parameter out of range");
         }
 
-        return (deltaLines - DBG_LINE_BASE)
-            + (DBG_LINE_RANGE * deltaAddress) + DBG_FIRST_SPECIAL;
+        return (deltaLines - DebugInfoConstants.DBG_LINE_BASE)
+            + (DebugInfoConstants.DBG_LINE_RANGE * deltaAddress) + DebugInfoConstants.DBG_FIRST_SPECIAL;
     }
 
     /**
@@ -860,7 +868,7 @@ public final class DebugInfoEncoder {
     private void emitAdvanceLine(int deltaLines) throws IOException {
         int mark = output.getCursor();
 
-        output.writeByte(DBG_ADVANCE_LINE);
+        output.writeByte(DebugInfoConstants.DBG_ADVANCE_LINE);
         output.writeSleb128(deltaLines);
         line += deltaLines;
 
@@ -884,7 +892,7 @@ public final class DebugInfoEncoder {
     private void emitAdvancePc(int deltaAddress) throws IOException {
         int mark = output.getCursor();
 
-        output.writeByte(DBG_ADVANCE_PC);
+        output.writeByte(DebugInfoConstants.DBG_ADVANCE_PC);
         output.writeUleb128(deltaAddress);
         address += deltaAddress;
 
@@ -921,7 +929,7 @@ public final class DebugInfoEncoder {
      * bytecode.
      */
     private void emitEndSequence() {
-        output.writeByte(DBG_END_SEQUENCE);
+        output.writeByte(DebugInfoConstants.DBG_END_SEQUENCE);
 
         if (annotateTo != null || debugPrint != null) {
             annotate(1, "end sequence");

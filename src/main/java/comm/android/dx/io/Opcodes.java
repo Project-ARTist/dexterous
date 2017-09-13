@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -261,6 +259,10 @@ public final class Opcodes {
     public static final int SHL_INT_LIT8 = 0xe0;
     public static final int SHR_INT_LIT8 = 0xe1;
     public static final int USHR_INT_LIT8 = 0xe2;
+    public static final int INVOKE_POLYMORPHIC = 0xfa;
+    public static final int INVOKE_POLYMORPHIC_RANGE = 0xfb;
+    public static final int INVOKE_CUSTOM = 0xfc;
+    public static final int INVOKE_CUSTOM_RANGE = 0xfd;
     // END(opcodes)
 
     // TODO: Generate these payload opcodes with opcode-gen.

@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +22,7 @@ import comm.android.dx.rop.code.BasicBlock;
 import comm.android.dx.rop.code.BasicBlockList;
 import comm.android.dx.rop.code.FillArrayDataInsn;
 import comm.android.dx.rop.code.Insn;
+import comm.android.dx.rop.code.InvokePolymorphicInsn;
 import comm.android.dx.rop.code.LocalVariableInfo;
 import comm.android.dx.rop.code.PlainCstInsn;
 import comm.android.dx.rop.code.PlainInsn;
@@ -41,6 +40,14 @@ import comm.android.dx.rop.cst.Constant;
 import comm.android.dx.rop.cst.CstInteger;
 import comm.android.dx.util.Bits;
 import comm.android.dx.util.IntList;
+import comm.android.dx.dex.DexOptions;
+import comm.android.dx.io.Opcodes;
+import comm.android.dx.rop.code.*;
+import comm.android.dx.rop.cst.Constant;
+import comm.android.dx.rop.cst.CstInteger;
+import comm.android.dx.util.Bits;
+import comm.android.dx.util.IntList;
+
 import java.util.ArrayList;
 
 /**
@@ -576,6 +583,7 @@ public final class RopTranslator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitPlainCstInsn(PlainCstInsn insn) {
             SourcePosition pos = insn.getPosition();
             Dop opcode = RopToDop.dopFor(insn);
@@ -613,6 +621,7 @@ public final class RopTranslator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitSwitchInsn(SwitchInsn insn) {
             SourcePosition pos = insn.getPosition();
             IntList cases = insn.getCases();
@@ -687,6 +696,32 @@ public final class RopTranslator {
         }
 
         /** {@inheritDoc} */
+        @Override
+        public void visitInvokePolymorphicInsn(InvokePolymorphicInsn insn) {
+            SourcePosition pos = insn.getPosition();
+            Dop opcode = RopToDop.dopFor(insn);
+            Rop rop = insn.getOpcode();
+
+            if (rop.getBranchingness() != Rop.BRANCH_THROW) {
+                throw new RuntimeException("Expected BRANCH_THROW got " + rop.getBranchingness());
+            } else if (!rop.isCallLike()) {
+                throw new RuntimeException("Expected call-like operation");
+            }
+
+            addOutput(lastAddress);
+
+            RegisterSpecList regs = insn.getSources();
+            Constant[] constants = new Constant[] {
+                insn.getInvokeMethod(),
+                insn.getCallSiteProto()
+                };
+            DalvInsn di = new MultiCstInsn(opcode, pos, regs, constants);
+
+            addOutput(di);
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public void visitThrowingCstInsn(ThrowingCstInsn insn) {
             SourcePosition pos = insn.getPosition();
             Dop opcode = RopToDop.dopFor(insn);
@@ -694,7 +729,7 @@ public final class RopTranslator {
             Constant cst = insn.getConstant();
 
             if (rop.getBranchingness() != Rop.BRANCH_THROW) {
-                throw new RuntimeException("shouldn't happen");
+                throw new RuntimeException("Expected BRANCH_THROW got " + rop.getBranchingness());
             }
 
             addOutput(lastAddress);
@@ -740,6 +775,7 @@ public final class RopTranslator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void visitThrowingInsn(ThrowingInsn insn) {
             SourcePosition pos = insn.getPosition();
             Dop opcode = RopToDop.dopFor(insn);

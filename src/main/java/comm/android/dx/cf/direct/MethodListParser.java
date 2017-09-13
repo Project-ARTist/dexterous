@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +17,12 @@
 package comm.android.dx.cf.direct;
 
 import comm.android.dx.cf.iface.AttributeList;
+import comm.android.dx.cf.iface.Member;
+import comm.android.dx.cf.iface.StdMethod;
+import comm.android.dx.cf.iface.StdMethodList;
+import comm.android.dx.rop.code.AccessFlags;
+import comm.android.dx.rop.cst.CstNat;
+import comm.android.dx.rop.cst.CstType;
 import comm.android.dx.cf.iface.Member;
 import comm.android.dx.cf.iface.StdMethod;
 import comm.android.dx.cf.iface.StdMethodList;

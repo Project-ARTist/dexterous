@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,9 +29,15 @@ import comm.android.dex.ProtoId;
 import comm.android.dex.SizeOf;
 import comm.android.dex.TableOfContents;
 import comm.android.dex.TypeList;
+import comm.android.dx.command.dexer.DxContext;
+import comm.android.dex.Annotation;
+import comm.android.dex.Code;
+import comm.android.dex.SizeOf;
+import comm.android.dx.command.dexer.DxContext;
 import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -46,6 +50,7 @@ public final class DexMerger {
     private final IndexMap[] indexMaps;
 
     private final CollisionPolicy collisionPolicy;
+    private final DxContext context;
     private final WriterSizes writerSizes;
 
     private final Dex dexOut;
@@ -89,15 +94,16 @@ public final class DexMerger {
     /** minimum number of wasted bytes before it's worthwhile to compact the result */
     private int compactWasteThreshold = 1024 * 1024; // 1MiB
 
-    public DexMerger(Dex[] dexes, final String codelibDexName, CollisionPolicy collisionPolicy)
+    public DexMerger(Dex[] dexes, final String codelibDexName, CollisionPolicy collisionPolicy, DxContext context)
             throws IOException {
-        this(dexes, codelibDexName, collisionPolicy, new WriterSizes(dexes));
+        this(dexes, codelibDexName, collisionPolicy, context, new WriterSizes(dexes));
     }
 
-    private DexMerger(Dex[] dexes, final String codelibDexName, CollisionPolicy collisionPolicy,
-                      WriterSizes writerSizes) throws IOException {
+    private DexMerger(Dex[] dexes, final String codelibDexName, CollisionPolicy collisionPolicy, DxContext context,
+            WriterSizes writerSizes) throws IOException {
         this.dexes = dexes;
         this.collisionPolicy = collisionPolicy;
+        this.context = context;
         this.writerSizes = writerSizes;
         this.codelibDexName = codelibDexName;
 
@@ -172,6 +178,8 @@ public final class DexMerger {
         unionAnnotationSetsAndDirectories();
         mergeClassDefs();
 
+        // computeSizesFromOffsets expects sections sorted by offset, so make it so
+        Arrays.sort(contentsOut.sections);
         // write the header
         contentsOut.header.off = 0;
         contentsOut.header.size = 1;
@@ -197,6 +205,8 @@ public final class DexMerger {
         unionAnnotationSetsAndDirectories();
         mergeMainDexClassDefs();
 
+        // computeSizesFromOffsets expects sections sorted by offset, so make it so
+        Arrays.sort(contentsOut.sections);
         // write the header
         contentsOut.header.off = 0;
         contentsOut.header.size = 1;
@@ -249,7 +259,7 @@ public final class DexMerger {
         int wastedByteCount = writerSizes.size() - compactedSizes.size();
         if (wastedByteCount >  + compactWasteThreshold) {
             DexMerger compacter = new DexMerger(
-                    new Dex[] {dexOut, new Dex(0)}, this.codelibDexName, CollisionPolicy.FAIL, compactedSizes);
+                    new Dex[] {dexOut, new Dex(0)}, this.codelibDexName, CollisionPolicy.FAIL, context, compactedSizes);
             result = compacter.mergeDexes();
             System.out.printf("Result compacted from %.1fKiB to %.1fKiB to save %.1fKiB%n",
                     dexOut.getLength() / 1024f,
@@ -259,15 +269,16 @@ public final class DexMerger {
 
         long elapsed = System.nanoTime() - start;
         for (int i = 0; i < dexes.length; i++) {
-            System.out.printf("Merged dex #%d (%d defs/%.1fKiB)%n",
-                    i + 1,
-                    dexes[i].getTableOfContents().classDefs.size,
-                    dexes[i].getLength() / 1024f);
+            context.out.printf("Merged dex #%d (%d defs/%.1fKiB)%n",
+                i + 1,
+                dexes[i].getTableOfContents().classDefs.size,
+                dexes[i].getLength() / 1024f);
         }
-        System.out.printf("Result is %d defs/%.1fKiB. Took %.1fs%n",
+        context.out.printf("Result is %d defs/%.1fKiB. Took %.1fs%n",
                 result.getTableOfContents().classDefs.size,
                 result.getLength() / 1024f,
                 elapsed / 1000000000f);
+
         return result;
     }
 
@@ -303,6 +314,11 @@ public final class DexMerger {
                 // Fill in values with the first value of each dex.
                 offsets[i] = readIntoMap(
                         dexSections[i], sections[i], indexMaps[i], indexes[i], values, i);
+            }
+            if (values.isEmpty()) {
+                getSection(contentsOut).off = 0;
+                getSection(contentsOut).size = 0;
+                return;
             }
             getSection(contentsOut).off = out.getPosition();
 
@@ -347,6 +363,11 @@ public final class DexMerger {
             List<UnsortedValue> all = new ArrayList<UnsortedValue>();
             for (int i = 0; i < dexes.length; i++) {
                 all.addAll(readUnsortedValues(dexes[i], indexMaps[i]));
+            }
+            if (all.isEmpty()) {
+                getSection(contentsOut).off = 0;
+                getSection(contentsOut).size = 0;
+                return;
             }
             Collections.sort(all);
 
@@ -403,6 +424,7 @@ public final class DexMerger {
                 this.offset = offset;
             }
 
+            @Override
             public int compareTo(UnsortedValue unsortedValue) {
                 return value.compareTo(unsortedValue.value);
             }
@@ -1226,7 +1248,7 @@ public final class DexMerger {
 //        for (int i = 1; i < args.length; i++) {
 //            dexes[i - 1] = new Dex(new File(args[i]));
 //        }
-//        Dex merged = new DexMerger(dexes, "", CollisionPolicy.KEEP_FIRST).merge();
+//        Dex merged = new DexMerger(dexes, "", CollisionPolicy.KEEP_FIRST, new DxContext()).merge();
 //        merged.writeTo(new File(args[0]));
 //    }
 //

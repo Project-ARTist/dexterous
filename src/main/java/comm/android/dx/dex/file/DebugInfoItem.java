@@ -1,8 +1,6 @@
 /*
  * Copyright (C) 2007 The Android Open Source Project
  *
- * Modifications Copyright (C) 2017 CISPA (https://cispa.saarland), Saarland University
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +23,14 @@ import comm.android.dx.dex.code.LocalList;
 import comm.android.dx.dex.code.PositionList;
 import comm.android.dx.rop.cst.CstMethodRef;
 import comm.android.dx.util.AnnotatedOutput;
+import comm.android.dex.util.ExceptionWithContext;
+import comm.android.dx.dex.code.DalvCode;
+import comm.android.dx.dex.code.DalvInsnList;
+import comm.android.dx.dex.code.LocalList;
+import comm.android.dx.dex.code.PositionList;
+import comm.android.dx.rop.cst.CstMethodRef;
+import comm.android.dx.util.AnnotatedOutput;
+
 import java.io.PrintWriter;
 
 public class DebugInfoItem extends OffsettedItem {
