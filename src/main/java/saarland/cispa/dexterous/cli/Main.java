@@ -85,30 +85,40 @@ public class Main {
         );
 
         options.addOption(
-                Option.builder("b")
+                Option.builder("m")
                         .argName("flag")
-                        .longOpt("build-apk")
+                        .longOpt("merge")
                         .desc("Build merged APK")
                         .hasArg(false)
                         .build()
         );
+
         options.addOption(
-                Option.builder("s")
+                Option.builder("b")
                         .argName("flag")
-                        .longOpt("sign-apk")
-                        .desc("Build and sign merged APK")
-                        .hasArg(false)
-                        .build()
-        );
-        options.addOption(
-                Option.builder("a")
-                        .argName("flag")
-                        .longOpt("analysze")
-                        .desc("Analyze APK")
+                        .longOpt("build-apk")
+                        .desc("Build partially merged APK")
                         .hasArg(false)
                         .build()
         );
 
+        options.addOption(
+                Option.builder("s")
+                        .argName("flag")
+                        .longOpt("sign-apk")
+                        .desc("Build and sign partialy merged APK")
+                        .hasArg(false)
+                        .build()
+        );
+
+        options.addOption(
+                Option.builder("a")
+                        .argName("flag")
+                        .longOpt("analyze")
+                        .desc("Analyze APK")
+                        .hasArg(false)
+                        .build()
+        );
         return options;
     }
 
@@ -118,8 +128,12 @@ public class Main {
         Config runConfig = new Config();
         try {
             arguments = parser.parse(setupOptions(), args);
-            if (arguments.hasOption("help")) {
+            if (arguments.hasOption("help") || arguments.getOptions().length == 0) {
                 usageExit();
+            }
+            // parse mode of operation
+            if (arguments.hasOption("merge")) {
+                runConfig.merge_dex = true;
             }
             // parse mode of operation
             if (arguments.hasOption("build-apk")) {
@@ -129,7 +143,7 @@ public class Main {
                 runConfig.build_apk = true;
                 runConfig.sign_apk = true;
             }
-            if (arguments.hasOption("anaylze")) {
+            if (arguments.hasOption("analyze")) {
                 runConfig.analyze_apk = true;
             }
             if (arguments.hasOption("codelib")) {
@@ -138,6 +152,9 @@ public class Main {
                     throw new ParseException(String.format("CodeLib is invalid: %s",
                             runConfig.codelib.getAbsolutePath()));
                 }
+            }
+            if (runConfig.merge_dex && (runConfig.build_apk || runConfig.sign_apk)) {
+                throw new ParseException(String.format("Either user --merge OR --build-apk/--sign-apk"));
             }
             for (final String argument : arguments.getArgList()) {
                 final File dexFile = new File(argument);

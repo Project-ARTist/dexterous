@@ -28,7 +28,9 @@ import java.util.List;
 
 public class Config {
 
-    public static boolean analyze_apk = true;
+    public boolean analyze_apk = false;
+
+    public boolean merge_dex = false;
 
     public boolean build_apk = false;
     public boolean sign_apk = false;
