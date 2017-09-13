@@ -42,12 +42,12 @@ public class MultiDex {
     public static final int MAXIMUM_DEX_FILES = 64;
     public static final int DEX_MAXIMUM_METHODS = 0xFFFF;
 
-    public static Map<String, Dex> openMultiDexApk(final File apkFile) {
+    public static Map<String, Dex> universalDexOpener(final File fileContainingDex) {
         Map<String, Dex> dexBuffers = new LinkedHashMap<>();
 
-        if (FileUtils.hasArchiveSuffix(apkFile.getName())) {
+        if (FileUtils.hasArchiveSuffix(fileContainingDex.getName())) {
 
-            try (ZipFile zipFile = new ZipFile(apkFile)) {
+            try (ZipFile zipFile = new ZipFile(fileContainingDex)) {
 
                 for (int i = 1; i < MAXIMUM_DEX_FILES; i++) {
 
@@ -57,14 +57,14 @@ public class MultiDex {
                     } else {
                         CLASSES_DEX_FILENAME = String.format("classes%s.dex", i);
                     }
-                    final String FULL_DEX_PATH = apkFile.getName() + ":" + CLASSES_DEX_FILENAME;
+                    final String FULL_DEX_PATH = fileContainingDex.getName() + ":" + CLASSES_DEX_FILENAME;
 
                     Log.i(TAG, "Loading DexFile: " + FULL_DEX_PATH);
                     ZipEntry entry = zipFile.getEntry(CLASSES_DEX_FILENAME);
                     if (entry == null) {
                         Log.i(TAG, String.format("ERROR Loading DexFile: %s: Not present in file: %s",
                                 CLASSES_DEX_FILENAME,
-                                apkFile.getName()));
+                                fileContainingDex.getName()));
                         break;
                     }
                     try {
@@ -77,11 +77,23 @@ public class MultiDex {
                     }
                 }
             } catch (final IOException e) {
-                Log.e(TAG, "Could not open APK: " + apkFile.toString());
+                Log.e(TAG, "Could not open APK: " + fileContainingDex.toString());
                 Log.e(TAG, e);
             }
+        } else if (FileUtils.isDexFile(fileContainingDex.getName())) {
+            final String FULL_DEX_PATH = fileContainingDex.getName();
+            try {
+                final Dex localDex = new Dex(fileContainingDex);
+                localDex.setName(FULL_DEX_PATH);
+                dexBuffers.put(FULL_DEX_PATH, localDex);
+            } catch (final IOException e) {
+                Log.e(TAG, e);
+                Log.e(TAG, "Could not open DexFile: " + FULL_DEX_PATH);
+            }
+        } else {
+            Log.e(TAG, "Could not open File: " + fileContainingDex.getAbsolutePath());
         }
-        Log.i(TAG, String.format("DONE Loading %02d Dexfiles (%s)", dexBuffers.size(), apkFile.getName()));
+        Log.i(TAG, String.format("DONE Loading %02d Dexfiles (%s)", dexBuffers.size(), fileContainingDex.getName()));
         return dexBuffers;
     }
 

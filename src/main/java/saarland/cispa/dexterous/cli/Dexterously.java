@@ -40,7 +40,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import static saarland.cispa.dexterous.MultiDex.openMultiDexApk;
+import static saarland.cispa.dexterous.MultiDex.universalDexOpener;
 
 public class Dexterously {
 
@@ -101,29 +101,11 @@ public class Dexterously {
         this.classDefsWithoutData = new LinkedHashMap<>();
         this.classDefDuplicates = new HashSet<>();
         this.classDefStats = new LinkedHashMap<>();
+
+        this.loadDexFiles();
     }
 
     public void analyze() {
-
-        int count = 0;
-
-        for (final File dexFile : runConfig.dexFiles) {
-            final String dexFileName = dexFile.getAbsolutePath();
-            this.dexSourceFiles.add(dexFileName);
-            //if apk file
-            addApkFile(dexFile, dexFileName);
-        }
-        addApkFile(runConfig.codelib, runConfig.codelib.getName());
-
-        initializeStatisticFields(dexBuffers);
-
-        // merge((Vector<Dex>) dexBuffers.values());
-        if (hasMultipleDexes()) {
-            Log.i(TAG, "# MULTIDEX File. DexFile Count: " + dexBuffers.size());
-        } else {
-            Log.i(TAG, "# MONODEX: Single Dexfile found");
-        }
-
         dexBuffers.keySet().stream().forEach(
                 DEX_NAME -> {
                     Dex dexFile = this.dexBuffers.get(DEX_NAME);
@@ -161,16 +143,38 @@ public class Dexterously {
                     Log.i(TAG, "");
                 }
         );
-
         analyzeMethodIdsMultidexDuplicates();
 //        analyzeMethodIdsDuplicatesAdvanced();
         analyzeClassDefMultidexDuplicates();
         analyzeClassDefDuplicatesAdvanced();
     }
 
-    private void addApkFile(File dexFile, String dexFileName) {
+    private void loadDexFiles() {
+        for (final File dexFile : runConfig.dexFiles) {
+            final String dexFileName = dexFile.getAbsolutePath();
+            this.dexSourceFiles.add(dexFileName);
+            //if apk file
+            addApkFile(dexFile, dexFileName);
+        }
+        if (runConfig.codelib != null) {
+            addApkFile(runConfig.codelib, runConfig.codelib.getName());
+        } else {
+            Log.i(TAG, "> No Codelib present");
+        }
+
+        initializeStatisticFields(dexBuffers);
+
+        // merge((Vector<Dex>) dexBuffers.values());
+        if (hasMultipleDexes()) {
+            Log.i(TAG, "# MULTIDEX File. DexFile Count: " + dexBuffers.size());
+        } else {
+            Log.i(TAG, "# MONODEX: Single Dexfile found");
+        }
+    }
+
+    private void addApkFile(final File dexFile, final String dexFileName) {
         if (FileUtils.hasArchiveSuffix(dexFileName)) {
-            Map<String, Dex> singleApkDexFiles = openMultiDexApk(dexFile);
+            Map<String, Dex> singleApkDexFiles = universalDexOpener(dexFile);
             dexBuffers.putAll(singleApkDexFiles);
         } else { // if dex file
             try {
@@ -191,7 +195,6 @@ public class Dexterously {
     }
 
     public void summary() {
-
         dexBuffers.keySet()
                 .stream()
                 .sorted()
@@ -729,7 +732,6 @@ public class Dexterously {
     }
 
     public Dex mergeCodeLibReference(final String dexName, final Dex dexFile, final boolean saveDexFile) {
-
         Dex mergedDexContent = null;
         try {
             DexMerger dexMerger = new DexMerger(
@@ -745,9 +747,52 @@ public class Dexterously {
         }
 
         if (saveDexFile) {
-
             try {
                 final String outputDexName = dexName.replace(":", "_");
+                OutputStream os = new FileOutputStream(new File(outputDexName));
+                os.write(mergedDexContent.getBytes());
+            } catch (final FileNotFoundException e) {
+                Log.e(TAG, e);
+            } catch (final IOException e) {
+                Log.e(TAG, e);
+            }
+        }
+        return mergedDexContent;
+    }
+
+    public void info() {
+        dexBuffers.keySet().stream().forEach(
+                DEX_NAME -> {
+                    Dex dexFile = this.dexBuffers.get(DEX_NAME);
+                    Log.i(TAG, "");
+                    Log.i(TAG, String.format("# DEXFILE: %s #############################################", DEX_NAME));
+                    Log.i(TAG, "");
+                    Loggy.printDexHeader(dexFile);
+                }
+        );
+    }
+
+    public void mergeDexfiles() {
+        mergeDexfiles(true);
+    }
+
+    public Dex mergeDexfiles(final boolean saveDexFile) {
+        final String outputDexName = "merged.dex";
+        Log.i(TAG, String.format("MERGING %d dexfiles into %s", dexBuffers.values().size(), outputDexName));
+        Dex mergedDexContent = null;
+        try {
+            DexMerger dexMerger = new DexMerger(
+                    dexBuffers.values().toArray(new Dex[dexBuffers.values().size()]),
+                    CODE_LIB_DEX_NAME,
+                    CollisionPolicy.FAIL,
+                    this.context
+            );
+            mergedDexContent = dexMerger.merge();
+        } catch (final IOException e) {
+            Log.e(TAG, e);
+        }
+        if (saveDexFile) {
+            try {
                 OutputStream os = new FileOutputStream(new File(outputDexName));
                 os.write(mergedDexContent.getBytes());
             } catch (final FileNotFoundException e) {

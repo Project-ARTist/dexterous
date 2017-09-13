@@ -31,8 +31,6 @@ public class Main {
     private static final String TOOLNAME = "Dexterously";
 
     public static void main(final String[] args) {
-        setupLogging();
-
         final Config runConfig = parseCommandLineArguments(args);
 
         Dexterously dexterously = new Dexterously(runConfig);
@@ -40,10 +38,10 @@ public class Main {
         // Analyzer Test
         if (runConfig.analyze_apk) {
             dexterously.analyze();
+            dexterously.summary();
+        } else {
+            dexterously.info();
         }
-
-        dexterously.summary();
-
         if (runConfig.build_apk) {
             dexterously.mergeCodeLib();
             dexterously.buildApk();
@@ -51,15 +49,9 @@ public class Main {
                 dexterously.signApk();
             }
         }
-    }
-
-    private static void setupLogging() {
-//        /// See: @url http://www.tinylog.org/configuration
-//        Configurator.currentConfig()
-//                /*.formatPattern("{level}:\t{message}")*/
-//                .formatPattern("{message}")
-//                .level(Level.INFO)
-//                .activate();
+        if (runConfig.merge_dex) {
+            dexterously.mergeDexfiles();
+        }
     }
 
     private static Options setupOptions() {

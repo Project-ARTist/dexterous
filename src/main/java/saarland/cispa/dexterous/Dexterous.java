@@ -47,7 +47,7 @@ import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
 import trikita.log.Log;
 
-import static saarland.cispa.dexterous.MultiDex.openMultiDexApk;
+import static saarland.cispa.dexterous.MultiDex.universalDexOpener;
 
 public class Dexterous {
 
@@ -77,9 +77,9 @@ public class Dexterous {
         this.dexSourceFiles.add(appApk.getAbsolutePath());
         this.dexSourceFiles.add(codeLibApk.getAbsolutePath());
 
-        final Map<String, Dex> appApkDexes = openMultiDexApk(appApk);
+        final Map<String, Dex> appApkDexes = universalDexOpener(appApk);
         dexBuffers.putAll(appApkDexes);
-        final Map<String, Dex> codeLibApkDexes = openMultiDexApk(codeLibApk);
+        final Map<String, Dex> codeLibApkDexes = universalDexOpener(codeLibApk);
         dexBuffers.putAll(codeLibApkDexes);
         Log.d(TAG, "Dexterous() Init:");
         Log.d(TAG, "> App:            " + appApk);

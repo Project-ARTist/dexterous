@@ -87,11 +87,17 @@ public final class FileUtils {
     }
 
     /**
-     * Returns true if {@code fileName} names a .zip, .jar, or .apk.
+     * Returns true if {@code fileName} ends with .zip, .jar, or .apk.
      */
-    public static boolean hasArchiveSuffix(String fileName) {
+    public static boolean hasArchiveSuffix(final String fileName) {
         return fileName.endsWith(".zip")
                 || fileName.endsWith(".jar")
                 || fileName.endsWith(".apk");
+    }
+    /**
+     * Returns true if {@code fileName} ends with `.dex`.
+     */
+    public static boolean isDexFile(final String fileName) {
+        return fileName.endsWith(".dex");
     }
 }
