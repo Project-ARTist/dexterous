@@ -27,6 +27,7 @@ import comm.android.dx.merge.CollisionPolicy;
 import comm.android.dx.merge.DexMerger;
 import saarland.cispa.dexterous.Config;
 import saarland.cispa.dexterous.DxUtils;
+import saarland.cispa.dexterous.MultiDex;
 import saarland.cispa.dexterous.stats.ClassDefStats;
 import saarland.cispa.dexterous.stats.MethodIdStats;
 import trikita.log.Log;
@@ -39,8 +40,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import static saarland.cispa.dexterous.MultiDex.universalDexOpener;
 
 public class Dexterously {
 
@@ -174,7 +173,7 @@ public class Dexterously {
 
     private void addApkFile(final File dexFile, final String dexFileName) {
         if (FileUtils.hasArchiveSuffix(dexFileName)) {
-            Map<String, Dex> singleApkDexFiles = universalDexOpener(dexFile);
+            final Map<String, Dex> singleApkDexFiles = MultiDex.loadDexfiles(dexFile);
             dexBuffers.putAll(singleApkDexFiles);
         } else { // if dex file
             try {

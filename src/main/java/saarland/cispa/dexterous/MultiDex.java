@@ -39,10 +39,10 @@ public class MultiDex {
     private static final String TAG = LogUtils.TAG;
 
     /** This value is a guess / should suffice for the next 1-15 years */
-    public static final int MAXIMUM_DEX_FILES = 64;
+    public static final int MAXIMUM_DEX_FILES = 128;
     public static final int DEX_MAXIMUM_METHODS = 0xFFFF;
 
-    public static Map<String, Dex> universalDexOpener(final File fileContainingDex) {
+    public static Map<String, Dex> loadDexfiles(final File fileContainingDex) {
         Map<String, Dex> dexBuffers = new LinkedHashMap<>();
 
         if (FileUtils.hasArchiveSuffix(fileContainingDex.getName())) {
@@ -51,7 +51,7 @@ public class MultiDex {
 
                 for (int i = 1; i < MAXIMUM_DEX_FILES; i++) {
 
-                    String CLASSES_DEX_FILENAME;
+                    final String CLASSES_DEX_FILENAME;
                     if (i == 1) {
                         CLASSES_DEX_FILENAME = DexFormat.DEX_IN_JAR_NAME;
                     } else {
@@ -60,6 +60,7 @@ public class MultiDex {
                     final String FULL_DEX_PATH = fileContainingDex.getName() + ":" + CLASSES_DEX_FILENAME;
 
                     Log.i(TAG, "Loading DexFile: " + FULL_DEX_PATH);
+
                     ZipEntry entry = zipFile.getEntry(CLASSES_DEX_FILENAME);
                     if (entry == null) {
                         Log.i(TAG, String.format("ERROR Loading DexFile: %s: Not present in file: %s",
