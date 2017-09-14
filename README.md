@@ -28,21 +28,31 @@ It implicitely uses the bundle debug keystore: `res/artist-debug.keystore`.
 user@host ~/dexterous $ java -jar build/libs/dexterous.jar --help
 
 usage: Dexterously <options>
- -b,--build-apk        Build merged APK
+ -a,--analyze          Analyze APK
+ -b,--build-apk        Build partially merged APK
  -c,--codelib <file>   Path to codelib.apk (name doesn't matter).
  -h,--help             Prints this message.
- -s,--sign-apk         Build and sign merged APK
+ -m,--merge            Build merged APK
+ -s,--sign-apk         Build and sign partialy merged APK
 ```
+
+### Merge codelib partially w/o signing the apk
+
+e.g.: `java -jar dexterous.jar my_application.apk --codelib codelib.apk --build-apk`
 
 ### Merge codelib partially and resign apk
 
 e.g.: `java -jar dexterous.jar my_application.apk --codelib codelib.apk --build-apk --sign-apk`
 
+### Merge two dex files completely
+
+e.g.: `java -jar dexterous.jar --merge my_application.dex library.dex`
+
 ### Analyse apk only
 
 > Execute dexterous without the build / sign flags
 
-`java -jar dexterous.jar my_application.apk`
+`java -jar dexterous.jar --analyze my_application.apk`
 
 ## Third-party code usage:
 
