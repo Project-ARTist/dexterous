@@ -1,6 +1,6 @@
-# dexterous
+# dexterous [![Build Status](https://travis-ci.org/Project-ARTist/dexterous.svg?branch=master)](https://travis-ci.org/Project-ARTist/dexterous)
 
-Dexterous is a commandline interface to ARTist's partial dex merging and apk-packaging and -signing.
+Dexterous is a commandline interface to ARTist's partial dex merging and apk-packaging and apk-signing.
 
 But that's not it's only functionality. You can also use it as an in depth dex anylsis framework.
 

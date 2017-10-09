@@ -5,7 +5,9 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 // Apply the shadow plugin to create fat-jars
-apply plugin: 'gradle-one-jar'
+// apply plugin: 'gradle-one-jar'
+
+mainClassName = "saarland.cispa.dexterous.cli.Main"
 
 buildscript {
     repositories {
@@ -15,7 +17,7 @@ buildscript {
     }
     dependencies {
 //        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0"
-        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
+//        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
     }
 
 }
@@ -26,6 +28,7 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
+
 sourceSets {
     main {
         java {
@@ -46,6 +49,8 @@ dependencies {
     compile 'com.madgag.spongycastle:pkix:1.54.0.0'
     compile 'commons-cli:commons-cli:1.4'
 }
+
+
 
 // FatJar: manual
 task DexterousJar(dependsOn: 'classes', type: Jar) {
