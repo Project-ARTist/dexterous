@@ -178,7 +178,7 @@ public class Dexterous {
                         final String fileExtension = ("." + FilenameUtils.getExtension(fileName));
                         final ZipEntry zipEntry = new ZipEntry(fileName);
                         if (Config.NO_COMPRESS_EXTENSIONS.contains(fileExtension)) {
-                            Log.d(TAG, String.format(Locale.getDefault(), "> No Compression: %s " +
+                            Log.v(TAG, String.format(Locale.getDefault(), "> No Compression: %s " +
                                     "[Method: %d] Size: %d Compressed: %d",
                                     fileName,
                                     apkContent.getMethod(),

@@ -413,14 +413,14 @@ public class ZipSigner {
         TreeMap<String, ZioEntry> byName = new TreeMap<String, ZioEntry>();
         byName.putAll(entries);
 
-        Log.d(TAG, "Manifest entries:");
+        Log.v(TAG, "Manifest entries:");
         for (ZioEntry entry : byName.values()) {
             if (Thread.currentThread().isInterrupted()) {
                 canceled = true;
             }
             if (canceled) break;
             String name = entry.getName();
-            Log.d(TAG, "> " + name);
+            Log.v(TAG, "> " + name);
             if (!entry.isDirectory() && !name.equals(JarFile.MANIFEST_NAME) &&
                     !name.equals(CERT_SF_NAME) && !name.equals(CERT_RSA_NAME) &&
                     (stripPattern == null ||
@@ -736,7 +736,7 @@ public class ZipSigner {
             generateSignatureFile(manifest, out);
             if (canceled) return;
             byte[] sfBytes = out.toByteArray();
-            Log.d(TAG, "Signature File: \n" + new String(sfBytes) + "\n" +
+            Log.v(TAG, "Signature File: \n" + new String(sfBytes) + "\n" +
                     HexDumpEncoder.encode(sfBytes));
             zipFileEntry.getOutputStream().write(sfBytes);
             zipOutput.write(zipFileEntry);
