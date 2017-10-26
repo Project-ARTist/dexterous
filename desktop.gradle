@@ -50,6 +50,9 @@ dependencies {
     compile 'commons-cli:commons-cli:1.4'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
+}
 
 
 // FatJar: manual
