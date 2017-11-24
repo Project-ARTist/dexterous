@@ -1,4 +1,4 @@
-# dexterous [![Build Status](https://travis-ci.org/Project-ARTist/dexterous.svg?branch=master)](https://travis-ci.org/Project-ARTist/dexterous)
+# dexterous [![Build Status](https://travis-ci.org/Project-ARTist/dexterous.svg?branch=master)](https://travis-ci.org/Project-ARTist/dexterous) [![Gitter](https://badges.gitter.im/Project-ARTist/meta.svg)](https://gitter.im/project-artist/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 
 Dexterous is a commandline interface to ARTist's partial dex merging and apk-packaging and apk-signing.
 
