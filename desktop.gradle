@@ -42,16 +42,16 @@ sourceSets {
 }
 
 dependencies {
-    compile 'co.trikita:log:1.1.5'
-    compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
-    compile 'com.madgag.spongycastle:core:1.54.0.0'
-    compile 'com.madgag.spongycastle:prov:1.54.0.0'
-    compile 'com.madgag.spongycastle:pkix:1.54.0.0'
-    compile 'commons-cli:commons-cli:1.4'
+    implementation 'co.trikita:log:1.1.5'
+    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
+    implementation 'com.madgag.spongycastle:core:1.54.0.0'
+    implementation 'com.madgag.spongycastle:prov:1.54.0.0'
+    implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
+    implementation 'commons-cli:commons-cli:1.4'
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.2.1'
+    gradleVersion = '4.4.1'
 }
 
 
