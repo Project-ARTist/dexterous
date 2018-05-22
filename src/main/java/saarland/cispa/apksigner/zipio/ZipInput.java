@@ -204,7 +204,7 @@ public class ZipInput {
         for (int i = 0; i < length; i++) {
             buffer[i] = in.readByte();
         }
-        return new String(buffer);
+        return new String(buffer, "ISO-8859-1");
     }
 
     public byte[] readBytes(int length) throws IOException {

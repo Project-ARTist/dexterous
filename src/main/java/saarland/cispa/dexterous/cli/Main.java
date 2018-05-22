@@ -21,6 +21,8 @@
 package saarland.cispa.dexterous.cli;
 
 import org.apache.commons.cli.*;
+
+import comm.android.dx.merge.DexMerger;
 import saarland.cispa.dexterous.Config;
 import trikita.log.Log;
 
@@ -42,15 +44,19 @@ public class Main {
         } else {
             dexterously.info();
         }
-        if (runConfig.build_apk) {
-            dexterously.mergeCodeLib();
-            dexterously.buildApk();
-            if (runConfig.sign_apk) {
-                dexterously.signApk();
+        try {
+            if (runConfig.build_apk) {
+                    dexterously.mergeCodeLib();
+                dexterously.buildApk();
+                if (runConfig.sign_apk) {
+                    dexterously.signApk();
+                }
             }
-        }
-        if (runConfig.merge_dex) {
-            dexterously.mergeDexfiles();
+            if (runConfig.merge_dex) {
+                dexterously.mergeDexfiles();
+            }
+        } catch (DexMerger.MergeException e) {
+            e.printStackTrace();
         }
     }
 

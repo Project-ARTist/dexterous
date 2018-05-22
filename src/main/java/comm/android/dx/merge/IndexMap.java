@@ -39,6 +39,8 @@ import static comm.android.dex.EncodedValueReader.ENCODED_NULL;
 import static comm.android.dex.EncodedValueReader.ENCODED_SHORT;
 import static comm.android.dex.EncodedValueReader.ENCODED_STRING;
 import static comm.android.dex.EncodedValueReader.ENCODED_TYPE;
+import static comm.android.dx.merge.DexMerger.INDEX_BLACKLISTED;
+
 import comm.android.dex.EncodedValueCodec;
 import comm.android.dex.FieldId;
 import comm.android.dex.Leb128;
@@ -62,10 +64,10 @@ import java.util.HashMap;
 public final class IndexMap {
     private final Dex target;
     public final int[] stringIds;
-    public final short[] typeIds;
-    public final short[] protoIds;
-    public final short[] fieldIds;
-    public final short[] methodIds;
+    public final Short[] typeIds;
+    public final Short[] protoIds;
+    public final Short[] fieldIds;
+    public final Short[] methodIds;
     private final HashMap<Integer, Integer> typeListOffsets;
     private final HashMap<Integer, Integer> annotationOffsets;
     private final HashMap<Integer, Integer> annotationSetOffsets;
@@ -76,10 +78,10 @@ public final class IndexMap {
     public IndexMap(Dex target, TableOfContents tableOfContents) {
         this.target = target;
         this.stringIds = new int[tableOfContents.stringIds.size];
-        this.typeIds = new short[tableOfContents.typeIds.size];
-        this.protoIds = new short[tableOfContents.protoIds.size];
-        this.fieldIds = new short[tableOfContents.fieldIds.size];
-        this.methodIds = new short[tableOfContents.methodIds.size];
+        this.typeIds = new Short[tableOfContents.typeIds.size];
+        this.protoIds = new Short[tableOfContents.protoIds.size];
+        this.fieldIds = new Short[tableOfContents.fieldIds.size];
+        this.methodIds = new Short[tableOfContents.methodIds.size];
         this.typeListOffsets = new HashMap<Integer, Integer>();
         this.annotationOffsets = new HashMap<Integer, Integer>();
         this.annotationSetOffsets = new HashMap<Integer, Integer>();
@@ -105,28 +107,28 @@ public final class IndexMap {
     }
 
     public void putAnnotationOffset(int oldOffset, int newOffset) {
-        if (oldOffset <= 0 || newOffset <= 0) {
+        if (oldOffset <= 0 || newOffset < 0) {
             throw new IllegalArgumentException();
         }
         annotationOffsets.put(oldOffset, newOffset);
     }
 
     public void putAnnotationSetOffset(int oldOffset, int newOffset) {
-        if (oldOffset <= 0 || newOffset <= 0) {
+        if (oldOffset <= 0 || newOffset < 0) {
             throw new IllegalArgumentException();
         }
         annotationSetOffsets.put(oldOffset, newOffset);
     }
 
     public void putAnnotationSetRefListOffset(int oldOffset, int newOffset) {
-        if (oldOffset <= 0 || newOffset <= 0) {
+        if (oldOffset <= 0 || newOffset < 0) {
             throw new IllegalArgumentException();
         }
         annotationSetRefListOffsets.put(oldOffset, newOffset);
     }
 
     public void putAnnotationDirectoryOffset(int oldOffset, int newOffset) {
-        if (oldOffset <= 0 || newOffset <= 0) {
+        if (oldOffset <= 0 || newOffset < 0) {
             throw new IllegalArgumentException();
         }
         annotationDirectoryOffsets.put(oldOffset, newOffset);
@@ -140,11 +142,14 @@ public final class IndexMap {
     }
 
     public int adjustString(int stringIndex) {
+        if (stringIndex != ClassDef.NO_INDEX && stringIds[stringIndex] == INDEX_BLACKLISTED) {
+            return 0;
+        }
         return stringIndex == ClassDef.NO_INDEX ? ClassDef.NO_INDEX : stringIds[stringIndex];
     }
 
     public int adjustType(int typeIndex) {
-        return (typeIndex == ClassDef.NO_INDEX) ? ClassDef.NO_INDEX : (typeIds[typeIndex] & 0xffff);
+        return (typeIndex == ClassDef.NO_INDEX || typeIds[typeIndex] == null ) ? ClassDef.NO_INDEX : (typeIds[typeIndex] & 0xffff);
     }
 
     public TypeList adjustTypeList(TypeList typeList) {
@@ -159,15 +164,15 @@ public final class IndexMap {
     }
 
     public int adjustProto(int protoIndex) {
-        return protoIds[protoIndex] & 0xffff;
+        return protoIds[protoIndex]==null ? ClassDef.NO_INDEX:protoIds[protoIndex] & 0xffff;
     }
 
     public int adjustField(int fieldIndex) {
-        return fieldIds[fieldIndex] & 0xffff;
+        return fieldIds[fieldIndex]==null ? ClassDef.NO_INDEX:fieldIds[fieldIndex] & 0xffff;
     }
 
     public int adjustMethod(int methodIndex) {
-        return methodIds[methodIndex] & 0xffff;
+        return methodIds[methodIndex]==null ? ClassDef.NO_INDEX: (methodIds[methodIndex] & 0xffff);
     }
 
     public int adjustTypeListOffset(int typeListOffset) {
@@ -253,7 +258,7 @@ public final class IndexMap {
     /**
      * Adjust an encoded value or array.
      */
-    private final class EncodedValueTransformer {
+    public final class EncodedValueTransformer {
         private final ByteOutput out;
 
         public EncodedValueTransformer(ByteOutput out) {
@@ -292,20 +297,23 @@ public final class IndexMap {
                         out, ENCODED_STRING, adjustString(reader.readString()));
                 break;
             case ENCODED_TYPE:
+                int type = adjustType(reader.readType());
                 EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_TYPE, adjustType(reader.readType()));
+                        out, ENCODED_TYPE, (type >= 0 && type <= 0xffff) ? type : 0);
                 break;
             case ENCODED_FIELD:
+                int field = adjustField(reader.readField());
                 EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_FIELD, adjustField(reader.readField()));
+                        out, ENCODED_FIELD, (field >= 0 && field <= 0xffff) ? field : 0);
                 break;
             case ENCODED_ENUM:
                 EncodedValueCodec.writeUnsignedIntegralValue(
                         out, ENCODED_ENUM, adjustField(reader.readEnum()));
                 break;
             case ENCODED_METHOD:
+                int methodid = adjustMethod(reader.readMethod());
                 EncodedValueCodec.writeUnsignedIntegralValue(
-                        out, ENCODED_METHOD, adjustMethod(reader.readMethod()));
+                        out, ENCODED_METHOD, (methodid >= 0 && methodid <= 0xffff) ? methodid : 0);
                 break;
             case ENCODED_ARRAY:
                 writeTypeAndArg(ENCODED_ARRAY, 0);
@@ -330,7 +338,8 @@ public final class IndexMap {
 
         private void transformAnnotation(EncodedValueReader reader) {
             int fieldCount = reader.readAnnotation();
-            Leb128.writeUnsignedLeb128(out, adjustType(reader.getAnnotationType()));
+            int type = adjustType(reader.getAnnotationType());
+            Leb128.writeUnsignedLeb128(out, type == INDEX_BLACKLISTED ? 0 : type);
             Leb128.writeUnsignedLeb128(out, fieldCount);
             for (int i = 0; i < fieldCount; i++) {
                 Leb128.writeUnsignedLeb128(out, adjustString(reader.readAnnotationName()));

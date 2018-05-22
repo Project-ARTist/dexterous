@@ -279,7 +279,7 @@ public class Dexterously {
         return this.classDefDuplicates.size() > 0;
     }
 
-    private void mergeMethodIds(final String DEX_NAME, Dex dexFile) {
+    private void mergeMethodIds(final String DEX_NAME, Dex dexFile) throws DexMerger.MergeException {
         if (!hasMultipleDexes()) {
             Log.e(TAG, String.format("## mergeMethodIds: NO Multiple DexFiles Found: Singular DexFile only."));
             return;
@@ -613,7 +613,8 @@ public class Dexterously {
                 );
     }
 
-    public void mergeCodeLib() {
+    public void mergeCodeLib() throws DexMerger.MergeException {
+        dexBuffers.get(CODE_LIB_DEX_NAME).setWhitelistedAnnotation("Lsaarland/cispa/artist/codelib/CodeLib$Inject;");
         for (Map.Entry<String, Dex> dexfile : dexBuffers.entrySet()) {
             final String DEX_NAME = dexfile.getKey();
             Dex dexFile = dexfile.getValue();
@@ -726,24 +727,24 @@ public class Dexterously {
             Log.e(TAG, e);
         }
     }
-    public Dex mergeCodeLibReference(final String dexName, final Dex dexFile) {
+    public Dex mergeCodeLibReference(final String dexName, final Dex dexFile) throws DexMerger.MergeException {
         return mergeCodeLibReference(dexName, dexFile, true);
     }
 
-    public Dex mergeCodeLibReference(final String dexName, final Dex dexFile, final boolean saveDexFile) {
+    public Dex mergeCodeLibReference(final String dexName, final Dex dexFile, final boolean saveDexFile) throws DexMerger.MergeException {
         Dex mergedDexContent = null;
+        DexMerger dexMerger = null;
         try {
-            DexMerger dexMerger = new DexMerger(
+            dexMerger = new DexMerger(
                     new Dex[]{dexFile, dexBuffers.get(CODE_LIB_DEX_NAME)},
                     CODE_LIB_DEX_NAME,
                     CollisionPolicy.FAIL,
                     this.context
             );
-            mergedDexContent = dexMerger.mergeMethodsOnly();
-
-        } catch (final IOException e) {
-            Log.e(TAG, e);
+        } catch (IOException e) {
+            throw new DexMerger.MergeException(e);
         }
+        mergedDexContent = dexMerger.mergeMethodsOnly();
 
         if (saveDexFile) {
             try {

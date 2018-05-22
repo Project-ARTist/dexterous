@@ -23,6 +23,8 @@ import comm.android.dx.io.Opcodes;
 import comm.android.dx.io.instructions.DecodedInstruction;
 import comm.android.dx.io.instructions.ShortArrayCodeOutput;
 
+import static comm.android.dx.merge.DexMerger.INDEX_BLACKLISTED;
+
 final class InstructionTransformer {
     private final CodeReader reader;
 
@@ -100,6 +102,9 @@ final class InstructionTransformer {
         public void visit(DecodedInstruction[] all, DecodedInstruction one) {
             int methodId = one.getIndex();
             int mappedId = indexMap.adjustMethod(methodId);
+            if (mappedId == INDEX_BLACKLISTED) {
+                throw new IllegalArgumentException("Instruction accesses blacklisted method");
+            }
             boolean isJumbo = (one.getOpcode() == Opcodes.CONST_STRING_JUMBO);
             jumboCheck(isJumbo, mappedId);
             mappedInstructions[mappedAt++] = one.withIndex(mappedId);

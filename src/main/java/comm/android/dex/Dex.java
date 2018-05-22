@@ -22,6 +22,8 @@ import comm.android.dex.util.ByteInput;
 import comm.android.dex.util.ByteOutput;
 import comm.android.dex.util.FileUtils;
 import comm.android.dex.util.ByteOutput;
+import comm.android.dx.merge.DexMerger;
+import comm.android.dx.merge.MethodFilter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -68,6 +70,17 @@ public final class Dex {
     private final ProtoIdTable protoIds = new ProtoIdTable();
     private final FieldIdTable fieldIds = new FieldIdTable();
     private final MethodIdTable methodIds = new MethodIdTable();
+
+    private MethodFilter methodFilter;
+
+    {
+        try {
+            methodFilter = new MethodFilter(this, null);
+        } catch (DexMerger.MergeException e) {
+            // should never happen
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Creates a new dex that reads from {@code data}. It is an error to modify
@@ -337,6 +350,14 @@ public final class Dex {
         this.dexName = dexName;
     }
 
+    public MethodFilter getMethodFilter() {
+        return methodFilter;
+    }
+
+    public void setWhitelistedAnnotation(String s) throws DexMerger.MergeException {
+        this.methodFilter = new MethodFilter(this, s);
+    }
+
     public final class Section implements ByteInput, ByteOutput {
         private final String name;
         private final ByteBuffer data;
@@ -592,6 +613,7 @@ public final class Dex {
         }
 
         public Annotation readAnnotation() {
+            //Log.w("SECTION", data.position()+"/"+ data.limit());
             byte visibility = readByte();
             int start = data.position();
             new EncodedValueReader(this, EncodedValueReader.ENCODED_ANNOTATION).skipValue();

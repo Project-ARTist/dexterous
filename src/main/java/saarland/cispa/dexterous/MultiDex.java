@@ -63,9 +63,10 @@ public class MultiDex {
 
                     ZipEntry entry = zipFile.getEntry(CLASSES_DEX_FILENAME);
                     if (entry == null) {
-                        Log.i(TAG, String.format("ERROR Loading DexFile: %s: Not present in file: %s",
-                                CLASSES_DEX_FILENAME,
-                                fileContainingDex.getName()));
+                        if (i == 1)
+                            Log.w(TAG, String.format("ERROR Loading DexFile: %s: Not present in file: %s",
+                                    CLASSES_DEX_FILENAME,
+                                    fileContainingDex.getName()));
                         break;
                     }
                     try {

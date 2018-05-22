@@ -125,7 +125,7 @@ public class ZipOutput {
 
     public void writeString(String value) throws IOException {
 
-        byte[] data = value.getBytes();
+        byte[] data = value.getBytes("ISO-8859-1");
         out.write(data);
         filePointer += data.length;
     }

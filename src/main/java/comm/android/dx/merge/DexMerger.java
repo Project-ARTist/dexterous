@@ -23,6 +23,7 @@ import comm.android.dex.Code;
 import comm.android.dex.Dex;
 import comm.android.dex.DexException;
 import comm.android.dex.DexIndexOverflowException;
+import comm.android.dex.EncodedValueReader;
 import comm.android.dex.FieldId;
 import comm.android.dex.MethodId;
 import comm.android.dex.ProtoId;
@@ -30,14 +31,9 @@ import comm.android.dex.SizeOf;
 import comm.android.dex.TableOfContents;
 import comm.android.dex.TypeList;
 import comm.android.dx.command.dexer.DxContext;
-import comm.android.dex.Annotation;
-import comm.android.dex.Code;
-import comm.android.dex.SizeOf;
-import comm.android.dx.command.dexer.DxContext;
 import saarland.cispa.utils.LogUtils;
 import trikita.log.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -90,6 +86,9 @@ public final class DexMerger {
 
     private final InstructionTransformer instructionTransformer;
     private final String codelibDexName;
+
+    public static final int OFFSET_BLACKLISTED = -2;
+    public static final int INDEX_BLACKLISTED = -1;
 
     /** minimum number of wasted bytes before it's worthwhile to compact the result */
     private int compactWasteThreshold = 1024 * 1024; // 1MiB
@@ -234,16 +233,20 @@ public final class DexMerger {
         return result;
     }
 
-    public Dex mergeMethodsOnly() throws IOException {
+    public Dex mergeMethodsOnly() throws MergeException {
         if (dexes.length == 1) {
             return dexes[0];
         } else if (dexes.length == 0) {
             return null;
         }
-        Dex result = mergeDexesMethods();
+        Dex result = null;
+        try {
+            result = mergeDexesMethods();
 
-        result = compactDex(result);
-
+            result = compactDex(result);
+        } catch (Throwable e) {
+            throw new MergeException(e);
+        }
         return result;
     }
 
@@ -293,6 +296,8 @@ public final class DexMerger {
             this.out = out;
         }
 
+        private final int FIRST_ITERATION = -3;
+
         /**
          * Merges already-sorted sections, reading one value from each dex into memory
          * at a time.
@@ -301,7 +306,10 @@ public final class DexMerger {
             TableOfContents.Section[] sections = new TableOfContents.Section[dexes.length];
             Dex.Section[] dexSections = new Dex.Section[dexes.length];
             int[] offsets = new int[dexes.length];
-            int[] indexes = new int[dexes.length];
+            Integer[] indexes = new Integer[dexes.length];
+            for (int i = 0; i < dexes.length; i++) {
+                indexes[i] = 0;
+            }
 
             // values contains one value from each dex, sorted for fast retrieval of
             // the smallest value. The list associated with a value has the indexes
@@ -312,8 +320,13 @@ public final class DexMerger {
                 sections[i] = getSection(dexes[i].getTableOfContents());
                 dexSections[i] = sections[i].exists() ? dexes[i].open(sections[i].off) : null;
                 // Fill in values with the first value of each dex.
-                offsets[i] = readIntoMap(
-                        dexSections[i], sections[i], indexMaps[i], indexes[i], values, i);
+                for (offsets[i] = FIRST_ITERATION; offsets[i] == OFFSET_BLACKLISTED || offsets[i] == FIRST_ITERATION;) {
+                    offsets[i] = readIntoMap(dexSections[i], sections[i],
+                            indexMaps[i], indexes[i], values, i);
+                    if (offsets[i] == OFFSET_BLACKLISTED) {
+                        updateIndex(offsets[i], indexMaps[i], indexes[i]++, INDEX_BLACKLISTED);
+                    }
+                }
             }
             if (values.isEmpty()) {
                 getSection(contentsOut).off = 0;
@@ -323,26 +336,36 @@ public final class DexMerger {
             getSection(contentsOut).off = out.getPosition();
 
             int outCount = 0;
+            int origOutCount = 0;
             while (!values.isEmpty()) {
                 Map.Entry<T, List<Integer>> first = values.pollFirstEntry();
                 for (Integer dex : first.getValue()) {
-                    updateIndex(offsets[dex], indexMaps[dex], indexes[dex]++, outCount);
-                    // Fetch the next value of the dexes we just polled out
-                    offsets[dex] = readIntoMap(dexSections[dex], sections[dex],
-                            indexMaps[dex], indexes[dex], values, dex);
+                    for (offsets[dex] = FIRST_ITERATION; offsets[dex] == OFFSET_BLACKLISTED || offsets[dex] == FIRST_ITERATION;) {
+                        updateIndex(offsets[dex], indexMaps[dex], indexes[dex]++, offsets[dex] == FIRST_ITERATION ? outCount : INDEX_BLACKLISTED);
+                        // Fetch the next value of the dexes we just polled out
+                        offsets[dex] = readIntoMap(dexSections[dex], sections[dex],
+                                indexMaps[dex], indexes[dex], values, dex);
+                        if (dex == 1 && offsets[dex] == OFFSET_BLACKLISTED) {
+                            origOutCount++;
+                        }
+                    }
                 }
                 write(first.getKey());
                 outCount++;
             }
-
+            Log.d("Blacklisted: " + origOutCount);
             getSection(contentsOut).size = outCount;
         }
+
 
         private int readIntoMap(Dex.Section in, TableOfContents.Section section, IndexMap indexMap,
                                 int index, TreeMap<T, List<Integer>> values, int dex) {
             int offset = in != null ? in.getPosition() : -1;
             if (index < section.size) {
-                T v = read(in, indexMap, index);
+                T v = read(in, indexMap, index, dex);
+                if (v == null) {
+                    return OFFSET_BLACKLISTED;
+                }
                 List<Integer> l = values.get(v);
                 if (l == null) {
                     l = new ArrayList<Integer>();
@@ -374,15 +397,16 @@ public final class DexMerger {
             int outCount = 0;
             for (int i = 0; i < all.size(); ) {
                 UnsortedValue e1 = all.get(i++);
-                updateIndex(e1.offset, e1.indexMap, e1.index, outCount - 1);
+                updateIndex(e1.offset, e1.indexMap, e1.index, e1.value == null ? INDEX_BLACKLISTED : outCount - 1);
 
-                while (i < all.size() && e1.compareTo(all.get(i)) == 0) {
+                while (i < all.size() && e1.value != null && e1.compareTo(all.get(i)) == 0) {
                     UnsortedValue e2 = all.get(i++);
-                    updateIndex(e2.offset, e2.indexMap, e2.index, outCount - 1);
+                    updateIndex(e2.offset, e2.indexMap, e2.index, e2.value == null ? INDEX_BLACKLISTED : outCount - 1);
                 }
-
-                write(e1.value);
-                outCount++;
+                if (e1.value != null) {
+                    write(e1.value);
+                    outCount++;
+                }
             }
 
             getSection(contentsOut).size = outCount;
@@ -405,7 +429,12 @@ public final class DexMerger {
         }
 
         abstract TableOfContents.Section getSection(TableOfContents tableOfContents);
-        abstract T read(Dex.Section in, IndexMap indexMap, int index);
+        T read(Dex.Section in, IndexMap indexMap, int index) {
+            throw new RuntimeException("not implemented");
+        }
+        T read(Dex.Section in, IndexMap indexMap, int index, int dex) {
+            return read(in, indexMap, index);
+        }
         abstract void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex);
         abstract void write(T value);
 
@@ -426,7 +455,15 @@ public final class DexMerger {
 
             @Override
             public int compareTo(UnsortedValue unsortedValue) {
-                return value.compareTo(unsortedValue.value);
+                if (value == null && unsortedValue.value == null) {
+                    return 0;
+                } else if (value == null) {
+                    return -1;
+                } else if (unsortedValue.value == null) {
+                    return 1;
+                } else {
+                    return value.compareTo(unsortedValue.value);
+                }
             }
         }
     }
@@ -443,17 +480,31 @@ public final class DexMerger {
     }
 
     private void mergeStringIds() {
+        Log.d("DexMerger","mergeStringIds...");
         new IdMerger<String>(idsDefsOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.stringIds;
             }
 
-            @Override String read(Dex.Section in, IndexMap indexMap, int index) {
-                return in.readString();
+            @Override String read(Dex.Section in, IndexMap indexMap, int index, int dex) {
+                String s = in.readString();
+                if (dexes[dex].getMethodFilter().checkStringId(index) == MethodFilter.Usage.WHITELISTED) {
+                    if (dex == 1) {
+                        Log.w("Whitelisted: " + index + " - " + s);
+                    }
+                    return s;
+                } else {
+                    return null;
+                }
             }
 
             @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
-                indexMap.stringIds[oldIndex] = newIndex;
+                if (newIndex == INDEX_BLACKLISTED) {
+                    // blacklisted
+                    indexMap.stringIds[oldIndex] = -1;
+                } else {
+                    indexMap.stringIds[oldIndex] = newIndex;
+                }
             }
 
             @Override void write(String value) {
@@ -465,21 +516,30 @@ public final class DexMerger {
     }
 
     private void mergeTypeIds() {
+        Log.d("DexMerger","mergeTypeIds...");
         new IdMerger<Integer>(idsDefsOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.typeIds;
             }
 
-            @Override Integer read(Dex.Section in, IndexMap indexMap, int index) {
+            @Override Integer read(Dex.Section in, IndexMap indexMap, int index, int dex) {
                 int stringIndex = in.readInt();
-                return indexMap.adjustString(stringIndex);
+                if (dexes[dex].getMethodFilter().checkTypeId((short) index) == MethodFilter.Usage.WHITELISTED) {
+                    return indexMap.adjustString(stringIndex);
+                } else {
+                    return null;
+                }
             }
 
             @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
-                if (newIndex < 0 || newIndex > 0xffff) {
-                    throw new DexIndexOverflowException("type ID not in [0, 0xffff]: " + newIndex);
+                if (newIndex == INDEX_BLACKLISTED) {
+                    // blacklisted
+                    indexMap.typeIds[oldIndex] = null;
+                } else if (newIndex < 0 || newIndex > 0xffff) {
+                    throw new DexIndexOverflowException("Too many type IDs. Type ID not in [0, 0xffff]: " + newIndex);
+                } else {
+                    indexMap.typeIds[oldIndex] = (short) newIndex;
                 }
-                indexMap.typeIds[oldIndex] = (short) newIndex;
             }
 
             @Override void write(Integer value) {
@@ -489,6 +549,7 @@ public final class DexMerger {
     }
 
     private void mergeTypeLists() {
+        Log.d("DexMerger","mergeTypeLists...");
         new IdMerger<TypeList>(typeListOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.typeLists;
@@ -509,20 +570,30 @@ public final class DexMerger {
     }
 
     private void mergeProtoIds() {
+        Log.d("DexMerger","mergeProtoIds...");
         new IdMerger<ProtoId>(idsDefsOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.protoIds;
             }
 
-            @Override ProtoId read(Dex.Section in, IndexMap indexMap, int index) {
-                return indexMap.adjust(in.readProtoId());
+            @Override ProtoId read(Dex.Section in, IndexMap indexMap, int index, int dex) {
+                ProtoId m = in.readProtoId();
+                if (dexes[dex].getMethodFilter().checkProtoId((short) index) == MethodFilter.Usage.WHITELISTED) {
+                    return indexMap.adjust(m);
+                } else {
+                    return null;
+                }
             }
 
             @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
-                if (newIndex < 0 || newIndex > 0xffff) {
-                    throw new DexIndexOverflowException("proto ID not in [0, 0xffff]: " + newIndex);
+                if (newIndex == INDEX_BLACKLISTED) {
+                    // blacklisted
+                    indexMap.protoIds[oldIndex] = null;
+                } else if (newIndex < 0 || newIndex > 0xffff) {
+                    throw new DexIndexOverflowException("Too many proto IDs. Proto ID not in [0, 0xffff]: " + newIndex);
+                } else {
+                    indexMap.protoIds[oldIndex] = (short) newIndex;
                 }
-                indexMap.protoIds[oldIndex] = (short) newIndex;
             }
 
             @Override void write(ProtoId value) {
@@ -532,20 +603,30 @@ public final class DexMerger {
     }
 
     private void mergeFieldIds() {
+        Log.d("DexMerger","mergeFieldIds...");
         new IdMerger<FieldId>(idsDefsOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.fieldIds;
             }
 
-            @Override FieldId read(Dex.Section in, IndexMap indexMap, int index) {
-                return indexMap.adjust(in.readFieldId());
+            @Override FieldId read(Dex.Section in, IndexMap indexMap, int index, int dex) {
+                FieldId m = in.readFieldId();
+                if (dexes[dex].getMethodFilter().checkFieldId((short) index) == MethodFilter.Usage.WHITELISTED) {
+                    return indexMap.adjust(m);
+                } else {
+                    return null;
+                }
             }
 
             @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
-                if (newIndex < 0 || newIndex > 0xffff) {
-                    throw new DexIndexOverflowException("field ID not in [0, 0xffff]: " + newIndex);
+                if (newIndex == INDEX_BLACKLISTED) {
+                    // blacklisted
+                    indexMap.fieldIds[oldIndex] = null;
+                } else if (newIndex < 0 || newIndex > 0xffff) {
+                    throw new DexIndexOverflowException("Too many field IDs. field ID not in [0, 0xffff]: " + newIndex);
+                } else {
+                    indexMap.fieldIds[oldIndex] = (short) newIndex;
                 }
-                indexMap.fieldIds[oldIndex] = (short) newIndex;
             }
 
             @Override void write(FieldId value) {
@@ -555,41 +636,64 @@ public final class DexMerger {
     }
 
     private void mergeMethodIds() {
+        Log.d("DexMerger","mergeMethodIds...");
         new IdMerger<MethodId>(idsDefsOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.methodIds;
             }
 
-            @Override MethodId read(Dex.Section in, IndexMap indexMap, int index) {
-                return indexMap.adjust(in.readMethodId());
+            @Override MethodId read(Dex.Section in, IndexMap indexMap, int index, int dex) {
+                MethodId m = in.readMethodId();
+                if (dexes[dex].getMethodFilter().checkMethodId((short) index) == MethodFilter.Usage.WHITELISTED) {
+                    return indexMap.adjust(m);
+                } else {
+                    return null;
+                }
             }
 
             @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
-                if (newIndex < 0 || newIndex > 0xffff) {
+                if (newIndex == INDEX_BLACKLISTED) {
+                    // blacklisted
+                    indexMap.methodIds[oldIndex] = null;
+                } else if (newIndex < 0 || newIndex > 0xffff) {
                     throw new DexIndexOverflowException(
-                        "method ID not in [0, 0xffff]: " + newIndex);
+                            "Too many method IDs. method ID not in [0, 0xffff]: " + newIndex);
+                } else {
+                    indexMap.methodIds[oldIndex] = (short) newIndex;
                 }
-                indexMap.methodIds[oldIndex] = (short) newIndex;
             }
 
             @Override void write(MethodId methodId) {
                 methodId.writeTo(idsDefsOut);
             }
         }.mergeSorted();
+
     }
 
     private void mergeAnnotations() {
+        Log.d("DexMerger","mergeAnnotations...");
         new IdMerger<Annotation>(annotationOut) {
             @Override TableOfContents.Section getSection(TableOfContents tableOfContents) {
                 return tableOfContents.annotations;
             }
 
             @Override Annotation read(Dex.Section in, IndexMap indexMap, int index) {
-                return indexMap.adjust(in.readAnnotation());
+                Annotation annotation = in.readAnnotation();
+                EncodedValueReader reader = annotation.getReader();
+                int fieldCount = reader.readAnnotation();
+                int type = indexMap.adjustType(reader.getAnnotationType());
+                for (int i = 0; i < fieldCount; i++) {
+                    reader.readAnnotationName();
+                }
+                if (type != INDEX_BLACKLISTED) {
+                    return indexMap.adjust(annotation);
+                } else {
+                    return null;
+                }
             }
 
             @Override void updateIndex(int offset, IndexMap indexMap, int oldIndex, int newIndex) {
-                indexMap.putAnnotationOffset(offset, annotationOut.getPosition());
+                indexMap.putAnnotationOffset(offset, newIndex != INDEX_BLACKLISTED ? annotationOut.getPosition() : 0);
             }
 
             @Override void write(Annotation value) {
@@ -599,6 +703,7 @@ public final class DexMerger {
     }
 
     private void mergeClassDefs() {
+        Log.d("DexMerger","mergeClassDefs...");
         SortableType[] types = getSortedTypes();
         contentsOut.classDefs.off = idsDefsOut.getPosition();
         contentsOut.classDefs.size = types.length;
@@ -610,6 +715,7 @@ public final class DexMerger {
     }
 
     private void mergeMainDexClassDefs() {
+        Log.d("DexMerger","mergeMainClassDefs...");
         SortableType[] types = getMainDexSortedTypes();
         contentsOut.classDefs.off = idsDefsOut.getPosition();
         contentsOut.classDefs.size = types.length;
@@ -820,47 +926,72 @@ public final class DexMerger {
      */
     private void transformAnnotationDirectory(
             Dex.Section directoryIn, IndexMap indexMap) {
-        contentsOut.annotationsDirectories.size++;
-        annotationsDirectoryOut.assertFourByteAligned();
-        indexMap.putAnnotationDirectoryOffset(
-                directoryIn.getPosition(), annotationsDirectoryOut.getPosition());
+        List<Integer> writeBuffer = new LinkedList<>();
+        int directoryOffset = directoryIn.getPosition();
 
         int classAnnotationsOffset = indexMap.adjustAnnotationSet(directoryIn.readInt());
-        annotationsDirectoryOut.writeInt(classAnnotationsOffset);
 
         int fieldsSize = directoryIn.readInt();
-        annotationsDirectoryOut.writeInt(fieldsSize);
+        int newFieldsSize = 0;
 
         int methodsSize = directoryIn.readInt();
-        annotationsDirectoryOut.writeInt(methodsSize);
+        int newMethodsSize = 0;
 
         int parameterListSize = directoryIn.readInt();
-        annotationsDirectoryOut.writeInt(parameterListSize);
+        int newParameterListSize = 0;
 
         for (int i = 0; i < fieldsSize; i++) {
             // field index
-            annotationsDirectoryOut.writeInt(indexMap.adjustField(directoryIn.readInt()));
+            int fieldIndex = indexMap.adjustField(directoryIn.readInt());
+            int offset = indexMap.adjustAnnotationSet(directoryIn.readInt());
+            if (fieldIndex != INDEX_BLACKLISTED && offset > 0) {
+                newFieldsSize++;
+                // not blacklisted
+                writeBuffer.add(fieldIndex);
 
-            // annotations offset
-            annotationsDirectoryOut.writeInt(indexMap.adjustAnnotationSet(directoryIn.readInt()));
+                writeBuffer.add(offset);
+            }
         }
 
         for (int i = 0; i < methodsSize; i++) {
             // method index
-            annotationsDirectoryOut.writeInt(indexMap.adjustMethod(directoryIn.readInt()));
+            int methodIndex = indexMap.adjustMethod(directoryIn.readInt());
+            int offset = indexMap.adjustAnnotationSet(directoryIn.readInt());
+            if (methodIndex != INDEX_BLACKLISTED && offset > 0) {
+                newMethodsSize++;
+                // not blacklisted
+                writeBuffer.add(methodIndex);
 
-            // annotation set offset
-            annotationsDirectoryOut.writeInt(
-                    indexMap.adjustAnnotationSet(directoryIn.readInt()));
+                writeBuffer.add(offset);
+            }
         }
 
         for (int i = 0; i < parameterListSize; i++) {
             // method index
-            annotationsDirectoryOut.writeInt(indexMap.adjustMethod(directoryIn.readInt()));
+            int methodIndex = indexMap.adjustMethod(directoryIn.readInt());
+            int offset = indexMap.adjustAnnotationSetRefList(directoryIn.readInt());
+            if (methodIndex != INDEX_BLACKLISTED && offset > 0) {
+                newParameterListSize++;
+                // not blacklisted
+                writeBuffer.add(methodIndex);
 
-            // annotations offset
-            annotationsDirectoryOut.writeInt(
-                    indexMap.adjustAnnotationSetRefList(directoryIn.readInt()));
+                writeBuffer.add(offset);
+            }
+        }
+        if (classAnnotationsOffset != 0 || newFieldsSize+newMethodsSize+newParameterListSize > 0) {
+            contentsOut.annotationsDirectories.size++;
+            annotationsDirectoryOut.assertFourByteAligned();
+            indexMap.putAnnotationDirectoryOffset(
+                    directoryOffset, annotationsDirectoryOut.getPosition());
+            annotationsDirectoryOut.writeInt(classAnnotationsOffset);
+            annotationsDirectoryOut.writeInt(newFieldsSize);
+            annotationsDirectoryOut.writeInt(newMethodsSize);
+            annotationsDirectoryOut.writeInt(newParameterListSize);
+            for (Integer value : writeBuffer) {
+                annotationsDirectoryOut.writeInt(value);
+            }
+        } else {
+            indexMap.putAnnotationDirectoryOffset(directoryOffset, 0);
         }
     }
 
@@ -868,15 +999,31 @@ public final class DexMerger {
      * Transform all annotations on a single type, member or parameter.
      */
     private void transformAnnotationSet(IndexMap indexMap, Dex.Section setIn) {
-        contentsOut.annotationSets.size++;
-        annotationSetOut.assertFourByteAligned();
-        indexMap.putAnnotationSetOffset(setIn.getPosition(), annotationSetOut.getPosition());
+        int annotationSetOffset = setIn.getPosition();
 
         int size = setIn.readInt();
-        annotationSetOut.writeInt(size);
+        int newSize = 0;
+
+        List<Integer> out = new ArrayList<>();
 
         for (int j = 0; j < size; j++) {
-            annotationSetOut.writeInt(indexMap.adjustAnnotation(setIn.readInt()));
+            int offset = indexMap.adjustAnnotation(setIn.readInt());
+            if (offset > 0) {
+                out.add(offset);
+                newSize++;
+            }
+        }
+
+        if (newSize > 0) {
+            contentsOut.annotationSets.size++;
+            annotationSetOut.assertFourByteAligned();
+            indexMap.putAnnotationSetOffset(annotationSetOffset, annotationSetOut.getPosition());
+            annotationSetOut.writeInt(newSize);
+            for (Integer i : out) {
+                annotationSetOut.writeInt(i);
+            }
+        } else {
+            indexMap.putAnnotationSetOffset(annotationSetOffset, 0);
         }
     }
 
@@ -884,15 +1031,35 @@ public final class DexMerger {
      * Transform all annotation set ref lists.
      */
     private void transformAnnotationSetRefList(IndexMap indexMap, Dex.Section refListIn) {
-        contentsOut.annotationSetRefLists.size++;
-        annotationSetRefListOut.assertFourByteAligned();
-        indexMap.putAnnotationSetRefListOffset(
-                refListIn.getPosition(), annotationSetRefListOut.getPosition());
+
+        int annotationSetRefListOffset = refListIn.getPosition();
 
         int parameterCount = refListIn.readInt();
-        annotationSetRefListOut.writeInt(parameterCount);
+        int newParameterCount = 0;
+
+        List<Integer> out = new ArrayList<>();
+
         for (int p = 0; p < parameterCount; p++) {
-            annotationSetRefListOut.writeInt(indexMap.adjustAnnotationSet(refListIn.readInt()));
+            int offset = indexMap.adjustAnnotationSet(refListIn.readInt());
+            if (offset > 0) {
+                out.add(offset);
+                newParameterCount++;
+            }
+        }
+
+        if (newParameterCount > 0) {
+            contentsOut.annotationSetRefLists.size++;
+            annotationSetRefListOut.assertFourByteAligned();
+            indexMap.putAnnotationSetRefListOffset(annotationSetRefListOffset
+                    , annotationSetRefListOut.getPosition());
+            annotationSetRefListOut.writeInt(newParameterCount);
+
+            for (Integer i : out) {
+                annotationSetRefListOut.writeInt(i);
+            }
+        } else {
+            indexMap.putAnnotationSetRefListOffset(
+                    annotationSetRefListOffset, 0);
         }
     }
 
@@ -919,9 +1086,13 @@ public final class DexMerger {
         int lastOutFieldIndex = 0;
         for (ClassData.Field field : fields) {
             int outFieldIndex = indexMap.adjustField(field.getFieldIndex());
-            classDataOut.writeUleb128(outFieldIndex - lastOutFieldIndex);
-            lastOutFieldIndex = outFieldIndex;
-            classDataOut.writeUleb128(field.getAccessFlags());
+            if (outFieldIndex != -1) {
+                classDataOut.writeUleb128(outFieldIndex - lastOutFieldIndex);
+                lastOutFieldIndex = outFieldIndex;
+                classDataOut.writeUleb128(field.getAccessFlags());
+            } else {
+                throw new AssertionError("Blacklisted field " + field.toString() + " is already defined in dex ");
+            }
         }
     }
 
@@ -929,17 +1100,22 @@ public final class DexMerger {
         int lastOutMethodIndex = 0;
         for (ClassData.Method method : methods) {
             int outMethodIndex = indexMap.adjustMethod(method.getMethodIndex());
-            classDataOut.writeUleb128(outMethodIndex - lastOutMethodIndex);
-            lastOutMethodIndex = outMethodIndex;
+            if (outMethodIndex != INDEX_BLACKLISTED) {
+                // not blacklisted
+                classDataOut.writeUleb128(outMethodIndex - lastOutMethodIndex);
+                lastOutMethodIndex = outMethodIndex;
 
-            classDataOut.writeUleb128(method.getAccessFlags());
+                classDataOut.writeUleb128(method.getAccessFlags());
 
-            if (method.getCodeOffset() == 0) {
-                classDataOut.writeUleb128(0);
+                if (method.getCodeOffset() == 0) {
+                    classDataOut.writeUleb128(0);
+                } else {
+                    codeOut.alignToFourBytesWithZeroFill();
+                    classDataOut.writeUleb128(codeOut.getPosition());
+                    transformCode(in, in.readCode(method), indexMap);
+                }
             } else {
-                codeOut.alignToFourBytesWithZeroFill();
-                classDataOut.writeUleb128(codeOut.getPosition());
-                transformCode(in, in.readCode(method), indexMap);
+                throw new AssertionError("Blacklisted method " + method.toString() + "is already defined in dex");
             }
         }
     }
@@ -1236,6 +1412,20 @@ public final class DexMerger {
                     + encodedArray + annotationsDirectory + annotationsSet + annotationsSetRefList
                     + annotation;
         }
+    }
+
+    public static class MergeException extends Exception {
+
+        private final Throwable exception;
+
+        public MergeException(Throwable exception) {
+            this.exception = exception;
+        }
+
+        public Throwable getValue(){
+            return exception;
+        }
+
     }
 
 //    public static void main(String[] args) throws IOException {

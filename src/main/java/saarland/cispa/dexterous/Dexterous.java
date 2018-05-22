@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -95,7 +96,7 @@ public class Dexterous {
         return dexBuffers.size() > 1;
     }
 
-    private void mergeMethodIds(final String DEX_NAME, Dex dexFile) {
+    private void mergeMethodIds(final String DEX_NAME, Dex dexFile) throws DexMerger.MergeException {
         if (!hasMultipleDexes()) {
             Log.e(TAG, String.format("mergeMethodIds: NO Multiple DexFiles Found: Singular DexFile only."));
             return;
@@ -111,7 +112,8 @@ public class Dexterous {
         }
     }
 
-    public void mergeCodeLib() {
+    public void mergeCodeLib() throws DexMerger.MergeException {
+        dexBuffers.get(CODE_LIB_DEX_NAME).setWhitelistedAnnotation("Lsaarland/cispa/artist/codelib/CodeLib$Inject;");
         for (Map.Entry<String, Dex> dexfile : dexBuffers.entrySet()) {
             final String DEX_NAME = dexfile.getKey();
             Dex dexFile = dexfile.getValue();
@@ -136,16 +138,16 @@ public class Dexterous {
         }
         try (
                 ZipInputStream zipInput =
-                        new ZipInputStream(new BufferedInputStream(apk_original));
+                        new ZipInputStream(new BufferedInputStream(apk_original), Charset.forName("ISO-8859-1"));
                 ZipOutputStream zipOutput =
-                        new ZipOutputStream(new BufferedOutputStream(apk_injected));
+                        new ZipOutputStream(new BufferedOutputStream(apk_injected), Charset.forName("ISO-8859-1"));
         ) {
             ZipEntry apkContent;
             int classes_dex_counter = 1;
 
             while ((apkContent = zipInput.getNextEntry()) != null) {
 //                Log.d(TAG, "> zipInput: " + apkContent.getName());
-                if (apkContent.getName().contains(".dex") && classes_dex_counter == 1) {
+                if (apkContent.getName().endsWith(".dex") && classes_dex_counter == 1) {
                     for (final Dex classesDex : this.dexBuffers.values()) {
                         final String classes_dex_name;
 
@@ -167,7 +169,7 @@ public class Dexterous {
                         }
                         ++classes_dex_counter;
                     }
-                } else {
+                } else if (!apkContent.getName().endsWith(".dex")){
                     byte[] buffer = new byte[1024];
                     int count;
                     try {
@@ -184,10 +186,14 @@ public class Dexterous {
                                     apkContent.getMethod(),
                                     apkContent.getSize(),
                                     apkContent.getCompressedSize()));
-                            zipEntry.setMethod(ZipEntry.STORED);
-                            zipEntry.setSize(apkContent.getSize());
-                            // zipEntry.setCompressedSize(apkContent.getCompressedSize());
-                            zipEntry.setCrc(apkContent.getCrc());
+                            long size = apkContent.getSize();
+                            long crc = apkContent.getCrc();
+                            if (size != -1 && crc != -1) {
+                                zipEntry.setMethod(ZipEntry.STORED);
+                                zipEntry.setSize(size);
+                                // zipEntry.setCompressedSize(apkContent.getCompressedSize());
+                                zipEntry.setCrc(crc);
+                            }
                         }
                         zipOutput.putNextEntry(zipEntry);
                         while ((count = zipInput.read(buffer)) != -1) {
@@ -206,11 +212,11 @@ public class Dexterous {
         }
     }
 
-    private Dex mergeCodeLibReference(final String dexName, final Dex dexFile) {
+    private Dex mergeCodeLibReference(final String dexName, final Dex dexFile) throws DexMerger.MergeException {
         return mergeCodeLibReference(dexName, dexFile, false);
     }
 
-    private Dex mergeCodeLibReference(final String dexName, final Dex dexFile, final boolean saveDexFile) {
+    private Dex mergeCodeLibReference(final String dexName, final Dex dexFile, final boolean saveDexFile) throws DexMerger.MergeException {
 
         Dex mergedDexContent = null;
         dexFile.setName(dexName);
@@ -225,6 +231,7 @@ public class Dexterous {
 
         } catch (final IOException e) {
             Log.e(TAG, "", e);
+            mergedDexContent = dexFile;
         }
 
         if (saveDexFile) {
