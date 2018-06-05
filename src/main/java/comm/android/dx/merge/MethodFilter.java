@@ -145,7 +145,7 @@ public class MethodFilter {
     }
 
     protected String getMethodString(int methodid){
-        Dex.Section typesSection = dex.open(dex.getTableOfContents().typeIds.off+8*methodid+4);
+        Dex.Section typesSection = dex.open(dex.getTableOfContents().methodIds.off+8*methodid+4);
         int stringid = typesSection.readInt();
         return getString(stringid);
     }
