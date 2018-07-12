@@ -113,11 +113,15 @@ public class Dexterous {
     }
 
     public void mergeCodeLib() throws DexMerger.MergeException {
-        dexBuffers.get(CODE_LIB_DEX_NAME).setWhitelistedAnnotation("Lsaarland/cispa/artist/codelib/CodeLib$Inject;");
-        for (Map.Entry<String, Dex> dexfile : dexBuffers.entrySet()) {
-            final String DEX_NAME = dexfile.getKey();
-            Dex dexFile = dexfile.getValue();
-            mergeMethodIds(DEX_NAME, dexFile);
+        try {
+            dexBuffers.get(CODE_LIB_DEX_NAME).setWhitelistedAnnotation("Lsaarland/cispa/artist/codelib/CodeLib$Inject;");
+            for (Map.Entry<String, Dex> dexfile : dexBuffers.entrySet()) {
+                final String DEX_NAME = dexfile.getKey();
+                Dex dexFile = dexfile.getValue();
+                mergeMethodIds(DEX_NAME, dexFile);
+            }
+        } catch (RuntimeException e) {
+            throw new DexMerger.MergeException(e);
         }
     }
 

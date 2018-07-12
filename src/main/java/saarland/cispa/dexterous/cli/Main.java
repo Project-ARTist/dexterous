@@ -56,7 +56,7 @@ public class Main {
                 dexterously.mergeDexfiles();
             }
         } catch (DexMerger.MergeException e) {
-            e.printStackTrace();
+            e.getValue().printStackTrace();
         }
     }
 
