@@ -95,7 +95,7 @@ public class MethodFilter {
             if (checkFieldId(j) == Usage.WHITELISTED) {
                 typeIdWhitelist.put((short) m.getDeclaringClassIndex(), Usage.WHITELISTED);
                 stringIdWhitelist.put(m.getNameIndex(), Usage.WHITELISTED);
-                protoIdWhitelist.put((short) m.getTypeIndex(), Usage.WHITELISTED);
+                typeIdWhitelist.put((short) m.getTypeIndex(), Usage.WHITELISTED);
             }
         }
     }
